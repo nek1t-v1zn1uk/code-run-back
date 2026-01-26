@@ -2,15 +2,18 @@ package com.example.coderun.domain.isolaterunner
 
 import org.springframework.stereotype.Service
 import java.nio.file.Files
-import java.util.Queue
+import java.nio.file.Path
 import java.util.concurrent.TimeUnit
+import kotlin.io.path.absolutePathString
 
 @Service
 class IsolateService {
+    private val activeProcessorCount = System.getenv("ACTIVE_PROCESSOR_COUNT_FOR_CODE_COMPILATION") ?: 2
     val boxIds = ArrayDeque<Int>().apply { addAll(1..999) }
 
     fun executeCode(
         code: String,
+        language: String,
         input: String = "",
         timeInSec: Float = 1.0F,
         memoryInKB: Int = 256_000
@@ -24,25 +27,38 @@ class IsolateService {
         runCommand("sudo isolate --init --box-id=$boxId")
 
         // create needed files in box
-        val tempCodeFile = Files.createTempFile("code", ".py")
-        Files.writeString(tempCodeFile, code)
-        runCommand("sudo cp $tempCodeFile ${boxDir}/code.py")
+        val tempCodeFile = createCodeFile(code, language)
+        val codeFilename = tempCodeFile.fileName.toString()
+        runCommand("sudo cp $tempCodeFile $boxDir/$codeFilename")
         val tempInputFile = Files.createTempFile("input", ".txt")
         Files.writeString(tempInputFile, input)
-        runCommand("sudo cp $tempInputFile ${boxDir}/input.txt")
+        runCommand("sudo cp $tempInputFile $boxDir/input.txt")
 
-        runCommand("sudo chmod 644 $boxDir/code.py")
+        runCommand("sudo chmod 777 $boxDir/$codeFilename")
 
         // run code
-        val command = listOf(
-            "sudo", "isolate", "--box-id=$boxId",
-            "--meta=$boxDir/metadata.txt",
-            "--stdin=input.txt",
-            "--time=$timeInSec",
-            "--mem=$memoryInKB",
-            "--dir=/usr/bin/", "--dir=/usr/lib/", "--dir=/lib/",
-            "--run", "--", "/usr/bin/python3", "code.py"
-        )
+        val command = buildList {
+            addAll(listOf(
+                "sudo", "isolate", "--box-id=$boxId",
+                "--meta=$boxDir/metadata.txt",
+                "--stdin=input.txt",
+                "--time=$timeInSec",
+                "--mem=$memoryInKB",
+                "--processes=${
+                    if(language.startsWith("kotlin")) 10
+                    else 1
+                }",
+                "--dir=/usr/bin/", "--dir=/usr/lib/", "--dir=/lib/", "--dir=/lib64/",
+                "--run", "--"
+            ))
+            if(language.startsWith("python")){
+                add("/usr/bin/python3")
+                add(codeFilename)
+            }
+            else
+                add("./$codeFilename") // for binaries
+        }
+
         val process = ProcessBuilder(command).start()
         process.waitFor(5, TimeUnit.SECONDS)
 
@@ -65,6 +81,8 @@ class IsolateService {
 
         // clear the box
         runCommand("sudo isolate --cleanup --box-id=$boxId")
+        Files.deleteIfExists(tempInputFile)
+        Files.deleteIfExists(tempCodeFile)
         boxIds.addLast(boxId)
 
         return result
@@ -82,5 +100,35 @@ class IsolateService {
                 val parts = line.split(":", limit = 2)
                 parts[0] to parts[1]
             }
+    }
+
+    private fun createCodeFile(code: String, language: String): Path{
+        lateinit var tempCodeFile: Path
+        if(language.startsWith("python")) {
+            tempCodeFile = Files.createTempFile("code", ".py")
+            Files.writeString(tempCodeFile, code)
+        } else if (language.startsWith("kotlin")) {
+            // create .kt file
+            tempCodeFile = Files.createTempFile("code", ".kt")
+            Files.writeString(tempCodeFile, code)
+
+            val parentDir = tempCodeFile.parent.absolutePathString()
+            val jarPath = "$parentDir/code.jar"
+            val binaryPath = "$parentDir/code"
+
+            // compile to .jar
+            runCommand("kotlinc -J-XX:ActiveProcessorCount=$activeProcessorCount ${tempCodeFile.absolutePathString()} -include-runtime -d $jarPath")
+
+            // compile to native binary
+            runCommand("native-image -J-XX:ActiveProcessorCount=$activeProcessorCount -jar $jarPath -o $binaryPath")
+
+            Files.deleteIfExists(tempCodeFile)
+            Files.deleteIfExists(Path.of(jarPath))
+
+            tempCodeFile = Path.of(binaryPath)
+        } else
+            throw NoSuchMethodException("No such language: $language")
+
+        return tempCodeFile
     }
 }

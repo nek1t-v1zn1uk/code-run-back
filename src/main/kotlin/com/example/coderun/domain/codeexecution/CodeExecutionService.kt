@@ -9,7 +9,7 @@ class CodeExecutionService(
     private val isolateService: IsolateService
 ) {
     fun runCode(request: CodeExecutionRequest): CodeExecutionResponse {
-        val codeResult = isolateService.executeCode(request.code, request.input)
+        val codeResult = isolateService.executeCode(request.code, request.language, request.input)
         return CodeExecutionResponse(
             status = when(codeResult.status) {
                 "OK" -> "OK"
