@@ -50,12 +50,13 @@ class IsolateService {
                 "--dir=/usr/bin/", "--dir=/usr/lib/", "--dir=/lib/", "--dir=/lib64/",
                 "--run", "--"
             ))
-            if(language.startsWith("python")){
+            if(language == "python"){
                 add("/usr/bin/python3")
                 add(codeFilename)
             }
-            else
+            else {
                 add("./$codeFilename") // for binaries
+            }
         }
 
         val process = ProcessBuilder(command).start()
@@ -108,10 +109,39 @@ class IsolateService {
 
     private fun createCodeFile(code: String, language: String): Path{
         lateinit var tempCodeFile: Path
-        if(language.startsWith("python")) {
+        if(language == "c") {
+            // create .c file
+            tempCodeFile = Files.createTempFile("code", ".c")
+            Files.writeString(tempCodeFile, code)
+
+            val binaryPath = "${tempCodeFile.parent.absolutePathString()}/code.bin"
+
+            //compile to binary
+            runCommand("gcc -O3 ${tempCodeFile.absolutePathString()} -o $binaryPath")
+
+            Files.deleteIfExists(tempCodeFile)
+
+            tempCodeFile = Path.of(binaryPath)
+        }
+        else if(language == "cpp") {
+            // create .cpp file
+            tempCodeFile = Files.createTempFile("code", ".cpp")
+            Files.writeString(tempCodeFile, code)
+
+            val binaryPath = "${tempCodeFile.parent.absolutePathString()}/code.bin"
+
+            //compile to binary
+            runCommand("g++ -O3 ${tempCodeFile.absolutePathString()} -o $binaryPath")
+
+            Files.deleteIfExists(tempCodeFile)
+
+            tempCodeFile = Path.of(binaryPath)
+        }
+        else if(language == "python") {
             tempCodeFile = Files.createTempFile("code", ".py")
             Files.writeString(tempCodeFile, code)
-        } else if (language.startsWith("kotlin")) {
+        }
+        else if (language == "kotlin") {
             // create .kt file
             tempCodeFile = Files.createTempFile("code", ".kt")
             Files.writeString(tempCodeFile, code)

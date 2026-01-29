@@ -1,5 +1,25 @@
 // Testing simple codes in every available language
 
+### С
+POST {{server}}/api/v1/code-execution
+Content-Type: application/json
+
+{
+  "code" : "#include <stdio.h>\nint main() { int a, b;scanf(\"%d %d\", &a, &b);printf(\"%d\", a + b); }",
+  "input": "2 3",
+  "language": "c"
+}
+
+### С++
+POST {{server}}/api/v1/code-execution
+Content-Type: application/json
+
+{
+  "code" : "#include <iostream>\nusing namespace std; int main() { int a, b; cin >> a >> b;cout << a + b << endl; }",
+  "input": "2 3",
+  "language": "cpp"
+}
+
 ### Python
 POST {{server}}/api/v1/code-execution
 Content-Type: application/json
