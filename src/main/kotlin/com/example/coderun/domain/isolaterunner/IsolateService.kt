@@ -21,10 +21,9 @@ class IsolateService {
         val boxId = boxIds.removeFirstOrNull()
             ?: throw IndexOutOfBoundsException("No available box IDs left")
 
-        val boxDir = "/var/lib/isolate/$boxId/box"
-
         // initialize box
-        runCommand("sudo isolate --init --box-id=$boxId")
+        val initDir = runCommand("sudo isolate --init --cg --box-id=$boxId")
+        val boxDir = "${initDir.removeSuffix("\n")}/box"
 
         // create needed files in box
         val tempCodeFile = createCodeFile(code, language)
@@ -43,7 +42,7 @@ class IsolateService {
                 "--meta=$boxDir/metadata.txt",
                 "--stdin=input.txt",
                 "--time=$timeInSec",
-                "--mem=$memoryInKB",
+                "--cg", "--cg-mem=$memoryInKB",
                 "--processes=${
                     if(language.startsWith("kotlin")) 10
                     else 1
@@ -80,7 +79,7 @@ class IsolateService {
         )
 
         // clear the box
-        runCommand("sudo isolate --cleanup --box-id=$boxId")
+        runCommand("sudo isolate --cleanup --cg --box-id=$boxId")
         Files.deleteIfExists(tempInputFile)
         Files.deleteIfExists(tempCodeFile)
         boxIds.addLast(boxId)
@@ -88,9 +87,14 @@ class IsolateService {
         return result
     }
 
-    private fun runCommand(cmd: String) {
+    private fun runCommand(cmd: String): String {
         val cmdInTokens = cmd.split(" ")
-        ProcessBuilder(cmdInTokens).start().waitFor()
+        val process = ProcessBuilder(cmdInTokens).start()
+        process.waitFor()
+        val stdout = process.inputStream.bufferedReader().readText()
+        val stderr = process.inputStream.bufferedReader().readText()
+        println("CMD: '$cmd'; Output: '$stdout' and Error: '$stderr'")
+        return stdout
     }
 
     private fun parseMeta(content: String): Map<String, String> {

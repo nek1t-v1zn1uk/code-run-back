@@ -1,0 +1,21 @@
+// Testing simple codes in every available language
+
+### Python
+POST {{server}}/api/v1/code-execution
+Content-Type: application/json
+
+{
+  "code" : "import sys\nline = sys.stdin.read()\nif line:\n    a, b = map(int, line.split())\n    print(a + b)",
+  "input": "2 3",
+  "language": "python"
+}
+
+### Kotlin
+POST {{server}}/api/v1/code-execution
+Content-Type: application/json
+
+{
+  "code" : "fun main() { val (a, b) = readln().split(' ').map { it.toInt() }\nprintln(a + b) }",
+  "input": "2 3",
+  "language": "kotlin"
+}
