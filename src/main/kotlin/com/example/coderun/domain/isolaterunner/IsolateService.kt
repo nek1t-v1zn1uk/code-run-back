@@ -5,6 +5,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.name
 
 @Service
 class IsolateService {
@@ -93,8 +94,6 @@ class IsolateService {
         val process = ProcessBuilder(cmdInTokens).start()
         process.waitFor()
         val stdout = process.inputStream.bufferedReader().readText()
-        val stderr = process.inputStream.bufferedReader().readText()
-        println("CMD: '$cmd'; Output: '$stdout' and Error: '$stderr'")
         return stdout
     }
 
@@ -114,7 +113,7 @@ class IsolateService {
             tempCodeFile = Files.createTempFile("code", ".c")
             Files.writeString(tempCodeFile, code)
 
-            val binaryPath = "${tempCodeFile.parent.absolutePathString()}/code.bin"
+            val binaryPath = "${tempCodeFile.parent.absolutePathString()}/${tempCodeFile.fileName.toString().split('.')[0]}.bin"
 
             //compile to binary
             runCommand("gcc -O3 ${tempCodeFile.absolutePathString()} -o $binaryPath")
@@ -128,7 +127,7 @@ class IsolateService {
             tempCodeFile = Files.createTempFile("code", ".cpp")
             Files.writeString(tempCodeFile, code)
 
-            val binaryPath = "${tempCodeFile.parent.absolutePathString()}/code.bin"
+            val binaryPath = "${tempCodeFile.parent.absolutePathString()}/${tempCodeFile.fileName.toString().split('.')[0]}.bin"
 
             //compile to binary
             runCommand("g++ -O3 ${tempCodeFile.absolutePathString()} -o $binaryPath")
@@ -142,21 +141,22 @@ class IsolateService {
             Files.writeString(tempCodeFile, code)
         }
         else if (language == "java") {
-            // renaming java class to unified name
-            val modifiedCode = code.replace(Regex("""class\s+[a-zA-Z0-9_]+"""), "class code")
             // create .java file
             tempCodeFile = Files.createTempFile("code", ".java")
+            val uniqueFilename = tempCodeFile.fileName.toString().split('.')[0]
+            // renaming java class to unified name
+            val modifiedCode = code.replace(Regex("""class\s+[a-zA-Z0-9_]+"""), "class $uniqueFilename")
             Files.writeString(tempCodeFile, modifiedCode)
 
             val parentDir = tempCodeFile.parent.absolutePathString()
-            val bytecodePath = "$parentDir/code.class"
-            val binaryPath = "$parentDir/code"
+            val bytecodePath = "$parentDir/$uniqueFilename.class"
+            val binaryPath = "$parentDir/$uniqueFilename"
 
             // compile to bytecode
             runCommand("javac -J-XX:ActiveProcessorCount=$activeProcessorCount ${tempCodeFile.absolutePathString()} -d $parentDir")
 
             // compile to native binary
-            runCommand("native-image -J-XX:ActiveProcessorCount=$activeProcessorCount -O3 -cp $parentDir code -o $binaryPath")
+            runCommand("native-image -J-XX:ActiveProcessorCount=$activeProcessorCount -O3 -cp $parentDir $uniqueFilename -o $binaryPath")
 
             Files.deleteIfExists(tempCodeFile)
             Files.deleteIfExists(Path.of(bytecodePath))
@@ -168,9 +168,10 @@ class IsolateService {
             tempCodeFile = Files.createTempFile("code", ".kt")
             Files.writeString(tempCodeFile, code)
 
+            val uniqueFilename = tempCodeFile.fileName.toString().split('.')[0]
             val parentDir = tempCodeFile.parent.absolutePathString()
-            val jarPath = "$parentDir/code.jar"
-            val binaryPath = "$parentDir/code"
+            val jarPath = "$parentDir/$uniqueFilename.jar"
+            val binaryPath = "$parentDir/$uniqueFilename"
 
             // compile to .jar
             runCommand("kotlinc -J-XX:ActiveProcessorCount=$activeProcessorCount ${tempCodeFile.absolutePathString()} -include-runtime -d $jarPath")
