@@ -30,6 +30,17 @@ Content-Type: application/json
   "language": "python"
 }
 
+### Java
+POST {{server}}/api/v1/code-execution
+Content-Type: application/json
+
+{
+  "code" : "import java.util.Scanner; class InteractiveAddition { public static void main(String[] args) { Scanner input = new Scanner(System.in); int a = input.nextInt(); int b = input.nextInt(); System.out.println(a + b); }}",
+  "input": "2 3",
+  "language": "java"
+}
+
+
 ### Kotlin
 POST {{server}}/api/v1/code-execution
 Content-Type: application/json

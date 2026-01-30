@@ -44,7 +44,7 @@ class IsolateService {
                 "--time=$timeInSec",
                 "--cg", "--cg-mem=$memoryInKB",
                 "--processes=${
-                    if(language.startsWith("kotlin")) 10
+                    if(language in listOf("java", "kotlin")) 10
                     else 1
                 }",
                 "--dir=/usr/bin/", "--dir=/usr/lib/", "--dir=/lib/", "--dir=/lib64/",
@@ -141,6 +141,28 @@ class IsolateService {
             tempCodeFile = Files.createTempFile("code", ".py")
             Files.writeString(tempCodeFile, code)
         }
+        else if (language == "java") {
+            // renaming java class to unified name
+            val modifiedCode = code.replace(Regex("""class\s+[a-zA-Z0-9_]+"""), "class code")
+            // create .java file
+            tempCodeFile = Files.createTempFile("code", ".java")
+            Files.writeString(tempCodeFile, modifiedCode)
+
+            val parentDir = tempCodeFile.parent.absolutePathString()
+            val bytecodePath = "$parentDir/code.class"
+            val binaryPath = "$parentDir/code"
+
+            // compile to bytecode
+            runCommand("javac -J-XX:ActiveProcessorCount=$activeProcessorCount ${tempCodeFile.absolutePathString()} -d $parentDir")
+
+            // compile to native binary
+            runCommand("native-image -J-XX:ActiveProcessorCount=$activeProcessorCount -O3 -cp $parentDir code -o $binaryPath")
+
+            Files.deleteIfExists(tempCodeFile)
+            Files.deleteIfExists(Path.of(bytecodePath))
+
+            tempCodeFile = Path.of(binaryPath)
+        }
         else if (language == "kotlin") {
             // create .kt file
             tempCodeFile = Files.createTempFile("code", ".kt")
@@ -160,7 +182,8 @@ class IsolateService {
             Files.deleteIfExists(Path.of(jarPath))
 
             tempCodeFile = Path.of(binaryPath)
-        } else
+        }
+        else
             throw NoSuchMethodException("No such language: $language")
 
         return tempCodeFile
