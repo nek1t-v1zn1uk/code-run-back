@@ -20,14 +20,27 @@ repositories {
 }
 
 dependencies {
+    // WebMVC
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    // Kotlin modules
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("tools.jackson.module:jackson-module-kotlin")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    // Sprint Boot Dev Tools
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    // Tests
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
+    // HTTP Client
+    implementation("org.springframework.boot:spring-boot-starter-restclient")
+    // JPA Data
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    // PostgreSQL
+    runtimeOnly("org.postgresql:postgresql")
+    // Flyway
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
+    implementation("org.flywaydb:flyway-database-postgresql")
+    // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
 }
 
