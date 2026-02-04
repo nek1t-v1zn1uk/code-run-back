@@ -1,0 +1,2 @@
+GET {{server}}/api/v1/healthcheck/test
+Accept: application/json

@@ -1,0 +1,52 @@
+// Testing simple codes in every available language
+
+### С
+POST {{server}}/api/v1/code-execution
+Content-Type: application/json
+
+{
+  "code" : "#include <stdio.h>\nint main() { int a, b;scanf(\"%d %d\", &a, &b);printf(\"%d\", a + b); }",
+  "input": "2 3",
+  "language": "c"
+}
+
+### С++
+POST {{server}}/api/v1/code-execution
+Content-Type: application/json
+
+{
+  "code" : "#include <iostream>\nusing namespace std; int main() { int a, b; cin >> a >> b;cout << a + b << endl; }",
+  "input": "2 3",
+  "language": "cpp"
+}
+
+### Python
+POST {{server}}/api/v1/code-execution
+Content-Type: application/json
+
+{
+  "code" : "import sys\nline = sys.stdin.read()\nif line:\n    a, b = map(int, line.split())\n    print(a + b)",
+  "input": "2 3",
+  "language": "python"
+}
+
+### Java
+POST {{server}}/api/v1/code-execution
+Content-Type: application/json
+
+{
+  "code" : "import java.util.Scanner; class InteractiveAddition { public static void main(String[] args) { Scanner input = new Scanner(System.in); int a = input.nextInt(); int b = input.nextInt(); System.out.println(a + b); }}",
+  "input": "2 3",
+  "language": "java"
+}
+
+
+### Kotlin
+POST {{server}}/api/v1/code-execution
+Content-Type: application/json
+
+{
+  "code" : "fun main() { val (a, b) = readln().split(' ').map { it.toInt() }\nprintln(a + b) }",
+  "input": "2 3",
+  "language": "kotlin"
+}
