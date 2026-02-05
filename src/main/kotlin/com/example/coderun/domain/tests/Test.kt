@@ -2,7 +2,7 @@ package com.example.coderun.domain.tests
 
 import com.example.coderun.domain.problems.EvaluationType
 import com.example.coderun.domain.problems.Problem
-import com.example.coderun.domain.problems.ScriptChecker
+import com.example.coderun.domain.tests.ScriptChecker
 import jakarta.persistence.*
 import java.time.Instant
 

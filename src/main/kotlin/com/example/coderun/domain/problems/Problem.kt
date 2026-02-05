@@ -1,5 +1,6 @@
 package com.example.coderun.domain.problems
 
+import com.example.coderun.domain.tests.ScriptChecker
 import jakarta.persistence.*
 import java.time.Instant
 
