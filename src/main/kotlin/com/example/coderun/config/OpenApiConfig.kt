@@ -19,6 +19,7 @@ import org.springdoc.core.customizers.OpenApiCustomizer
     tags = [
         Tag(name = "Server Healthcheck"),
         Tag(name = "Code Execution"),
+        Tag(name = "Problems"),
     ]
 )
 @SecurityScheme(
@@ -39,6 +40,7 @@ class SwaggerTagOrderConfig {
         val tagOrder = listOf(
             "Server Healthcheck",
             "Code Execution",
+            "Problems"
         )
 
         return OpenApiCustomizer { openApi ->

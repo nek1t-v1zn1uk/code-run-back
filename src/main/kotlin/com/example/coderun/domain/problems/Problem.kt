@@ -39,4 +39,17 @@ data class Problem(
 
     @Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now()
-)
+) {
+    fun toProblemDto() = ProblemDto(
+        id!!,
+        title,
+        topic,
+        difficulty,
+        statement,
+        executionTimeLimitMs,
+        executionMemoryLimitKb,
+        defaultEvaluationType,
+        defaultScriptChecker?.id,
+        createdAt
+    )
+}
