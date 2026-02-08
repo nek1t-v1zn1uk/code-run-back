@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.RestController
 class ProblemController (
     private val problemService: ProblemService,
 ) {
+    @GetMapping("/topics")
+    fun getProblemTopics(): ResponseEntity<*> {
+        val problemTopics = problemService.getProblemTopics()
+        return ResponseEntity.ok(problemTopics)
+    }
     @GetMapping("/{id}")
     fun getProblemById(@PathVariable id: Int): ResponseEntity<*> {
         return try {
