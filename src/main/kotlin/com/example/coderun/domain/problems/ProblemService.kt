@@ -1,5 +1,6 @@
 package com.example.coderun.domain.problems
 
+import com.example.coderun.util.CursorUtil
 import jakarta.persistence.EntityNotFoundException
 import jakarta.persistence.criteria.Predicate
 import org.springframework.data.domain.PageRequest
@@ -38,11 +39,12 @@ class ProblemService (
 
             // keyset logic
             // (difficulty > lastDifficulty) OR (difficulty = lastDifficulty AND id > lastId)
-            if (request.lastSeenId != null && request.lastSeenDifficulty != null) {
-                val greaterDifficulty = cb.greaterThan(root.get("difficulty"), request.lastSeenDifficulty)
+            val decodedCursor = CursorUtil.decode<ProblemCursor>(request.cursor)
+            if (decodedCursor != null) {
+                val greaterDifficulty = cb.greaterThan(root.get("difficulty"), decodedCursor.lastSeenDifficulty)
 
-                val equalDifficulty = cb.equal(root.get<ProblemDifficulty>("difficulty"), request.lastSeenDifficulty)
-                val greaterId = cb.greaterThan(root.get<Int>("id"), request.lastSeenId)
+                val equalDifficulty = cb.equal(root.get<ProblemDifficulty>("difficulty"), decodedCursor.lastSeenDifficulty)
+                val greaterId = cb.greaterThan(root.get<Int>("id"), decodedCursor.lastSeenId)
                 val sameDifficultyNextId = cb.and(equalDifficulty, greaterId)
 
                 predicates.add(cb.or(greaterDifficulty, sameDifficultyNextId))
@@ -63,12 +65,13 @@ class ProblemService (
         val problems = if(hasNext) fetchedProblems.dropLast(1) else fetchedProblems
 
         val lastItem = problems.lastOrNull()
-        val nextCursor = lastItem?.let { ProblemCursor(it.id!!, it.difficulty) }
+        val nextCursor = lastItem?.let { ProblemCursor(it.id!!, it.difficulty.ordinal) }
+        val nextCursorToken = nextCursor?.let { CursorUtil.encode(it) }
 
         return ProblemPageResponse(
             problems.map { it.toProblemDto() },
             hasNext,
-            nextCursor
+            nextCursorToken
         )
     }
 }

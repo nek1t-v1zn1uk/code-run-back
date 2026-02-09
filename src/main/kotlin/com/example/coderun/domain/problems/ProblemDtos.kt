@@ -19,16 +19,15 @@ data class GetProblemsRequest (
     val difficulty: ProblemDifficulty?,
     val topicName: String?,
     val limit: Int = 10,
-    val lastSeenId: Int?,
-    val lastSeenDifficulty: ProblemDifficulty?
+    val cursor: String?,
 )
 data class ProblemPageResponse (
     val content: List<ProblemDto>,
     val hasNext: Boolean,
-    val nextCursor: ProblemCursor?,
+    val nextCursor: String?,
     val isEmpty: Boolean = content.isEmpty()
 )
 data class ProblemCursor (
     val lastSeenId: Int,
-    val lastSeenDifficulty: ProblemDifficulty
+    val lastSeenDifficulty: Int // Int for the Ordinal value
 )
