@@ -1,6 +1,10 @@
 package com.example.coderun.domain.problems
 
 import jakarta.persistence.EntityNotFoundException
+import jakarta.persistence.criteria.Predicate
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrNull
 
@@ -18,8 +22,53 @@ class ProblemService (
             ?: throw EntityNotFoundException("Problem with id: $id not found")
         return problem.toProblemDto()
     }
-    fun getProblemsDto(): List<ProblemDto> {
-        val problems = problemRepository.findAll()
-        return problems.map { it.toProblemDto() }
+    fun getProblemWrapped(request: GetProblemsRequest): ProblemPageResponse {
+        // build specification for query
+        val spec = Specification<Problem> { root, query, cb ->
+            val predicates = mutableListOf<Predicate>()
+
+            // static filters
+            request.topicName?.let {
+                val topicJoin = root.join<Problem, ProblemTopic>("topic")
+                predicates.add(cb.equal(topicJoin.get<String>("name"), it))
+            }
+            request.difficulty?.let {
+                predicates.add(cb.equal(root.get<ProblemDifficulty>("difficulty"), it))
+            }
+
+            // keyset logic
+            // (difficulty > lastDifficulty) OR (difficulty = lastDifficulty AND id > lastId)
+            if (request.lastSeenId != null && request.lastSeenDifficulty != null) {
+                val greaterDifficulty = cb.greaterThan(root.get("difficulty"), request.lastSeenDifficulty)
+
+                val equalDifficulty = cb.equal(root.get<ProblemDifficulty>("difficulty"), request.lastSeenDifficulty)
+                val greaterId = cb.greaterThan(root.get<Int>("id"), request.lastSeenId)
+                val sameDifficultyNextId = cb.and(equalDifficulty, greaterId)
+
+                predicates.add(cb.or(greaterDifficulty, sameDifficultyNextId))
+            }
+
+            cb.and(*predicates.toTypedArray())
+        }
+
+        // sorting and size (getting limit + 1 to know if there is a next page)
+        val pageable = PageRequest.of(
+            0, request.limit + 1,
+            Sort.by("difficulty").ascending().and(Sort.by("id").ascending())
+        )
+
+        val fetchedProblems = problemRepository.findAll(spec, pageable).content
+
+        val hasNext = fetchedProblems.size > request.limit
+        val problems = if(hasNext) fetchedProblems.dropLast(1) else fetchedProblems
+
+        val lastItem = problems.lastOrNull()
+        val nextCursor = lastItem?.let { ProblemCursor(it.id!!, it.difficulty) }
+
+        return ProblemPageResponse(
+            problems.map { it.toProblemDto() },
+            hasNext,
+            nextCursor
+        )
     }
 }

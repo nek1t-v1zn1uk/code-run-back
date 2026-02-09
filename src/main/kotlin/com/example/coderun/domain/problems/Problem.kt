@@ -18,6 +18,7 @@ data class Problem(
     @JoinColumn(name = "topic")
     var topic: ProblemTopic? = null,
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
     var difficulty: ProblemDifficulty,
 
