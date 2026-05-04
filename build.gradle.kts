@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "2.2.21"
     kotlin("plugin.spring") version "2.2.21"
+    kotlin("plugin.jpa") version "2.2.21"
     id("org.springframework.boot") version "4.0.2"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -20,14 +21,27 @@ repositories {
 }
 
 dependencies {
+    // WebMVC
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    // Kotlin modules
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("tools.jackson.module:jackson-module-kotlin")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    // Sprint Boot Dev Tools
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    // Tests
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
+    // HTTP Client
+    implementation("org.springframework.boot:spring-boot-starter-restclient")
+    // JPA Data
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    // PostgreSQL
+    runtimeOnly("org.postgresql:postgresql")
+    // Flyway
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
+    implementation("org.flywaydb:flyway-database-postgresql")
+    // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
 }
 
