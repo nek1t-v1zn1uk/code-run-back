@@ -10,6 +10,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  Jackson:
+    property-naming-strategy: SNAKE_CASE
   flyway:
     enabled: true
     url: ${POSTGRES_URL}

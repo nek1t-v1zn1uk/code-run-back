@@ -18,6 +18,7 @@ import org.springdoc.core.customizers.OpenApiCustomizer
     security = [SecurityRequirement(name = "bearerAuth")],
     tags = [
         Tag(name = "Server Healthcheck"),
+        Tag(name = "Authentication"),
         Tag(name = "Code Execution"),
         Tag(name = "Problems"),
     ]
@@ -39,6 +40,7 @@ class SwaggerTagOrderConfig {
     fun reorderTags(): OpenApiCustomizer {
         val tagOrder = listOf(
             "Server Healthcheck",
+            "Authentication",
             "Code Execution",
             "Problems"
         )
