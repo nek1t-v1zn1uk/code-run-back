@@ -9,15 +9,15 @@ data class RegisterRequest(
     @field:NotBlank
     @field:Email
     @field:Size(min = 1, max = 255)
-    val email: String,
+    val email: String = "",
 
     @field:NotBlank
     @field:Size(min = 8, max = 255)
-    val password: String,
+    val password: String = "",
 
     @field:NotBlank
     @field:Size(min = 1, max = 32)
-    val firstName: String,
+    val firstName: String = "",
 
     @field:Size(min = 1, max = 32)
     val lastName: String? = null,
@@ -26,11 +26,11 @@ data class LoginRequest(
     @field:NotBlank
     @field:Email
     @field:Size(min = 1, max = 255)
-    val email: String,
+    val email: String = "",
 
     @field:NotBlank
     @field:Size(min = 8, max = 255)
-    val password: String,
+    val password: String = "",
 )
 
 data class RegisterResponse(

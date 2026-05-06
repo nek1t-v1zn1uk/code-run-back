@@ -14,7 +14,7 @@ POST {{server}}/api/v1/auth/login
 Content-Type: application/json
 
 {
-  "email": "testuser@example.com2",
+  "email": "testuser@example.com",
   "password": "Pass123$"
 }
 
