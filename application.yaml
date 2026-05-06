@@ -20,3 +20,15 @@ spring:
     user: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     locations: classpath:db/migration
+
+springdoc:
+  swagger-ui:
+    filter: true
+    persist-authorization: true
+    try-it-out-enabled: true
+    display-request-duration: true
+    deep-linking: true
+    default-model-expand-depth: 1
+    syntax-highlight:
+      activated: true
+      theme: monokai
