@@ -1,5 +1,7 @@
-package com.example.coderun.domain.problems
+package com.example.coderun.domain.problems.controller
 
+import com.example.coderun.domain.problems.dto.GetProblemsRequest
+import com.example.coderun.domain.problems.service.ProblemService
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.http.HttpStatus

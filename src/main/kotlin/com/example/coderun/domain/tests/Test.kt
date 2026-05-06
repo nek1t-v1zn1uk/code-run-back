@@ -1,8 +1,7 @@
 package com.example.coderun.domain.tests
 
-import com.example.coderun.domain.problems.EvaluationType
-import com.example.coderun.domain.problems.Problem
-import com.example.coderun.domain.tests.ScriptChecker
+import com.example.coderun.domain.problems.entity.EvaluationType
+import com.example.coderun.domain.problems.entity.Problem
 import jakarta.persistence.*
 import java.time.Instant
 

@@ -1,5 +1,8 @@
-package com.example.coderun.domain.problems
+package com.example.coderun.domain.problems.dto
 
+import com.example.coderun.domain.problems.entity.EvaluationType
+import com.example.coderun.domain.problems.entity.ProblemDifficulty
+import com.example.coderun.domain.problems.entity.ProblemTopic
 import java.time.Instant
 
 data class ProblemDto (

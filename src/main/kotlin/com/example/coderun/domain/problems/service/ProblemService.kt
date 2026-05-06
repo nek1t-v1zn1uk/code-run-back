@@ -1,5 +1,14 @@
-package com.example.coderun.domain.problems
+package com.example.coderun.domain.problems.service
 
+import com.example.coderun.domain.problems.dto.GetProblemsRequest
+import com.example.coderun.domain.problems.dto.ProblemCursor
+import com.example.coderun.domain.problems.dto.ProblemDto
+import com.example.coderun.domain.problems.dto.ProblemPageResponse
+import com.example.coderun.domain.problems.entity.Problem
+import com.example.coderun.domain.problems.entity.ProblemDifficulty
+import com.example.coderun.domain.problems.entity.ProblemTopic
+import com.example.coderun.domain.problems.repository.ProblemRepository
+import com.example.coderun.domain.problems.repository.ProblemTopicRepository
 import com.example.coderun.util.CursorUtil
 import jakarta.persistence.EntityNotFoundException
 import jakarta.persistence.criteria.Predicate
@@ -43,7 +52,8 @@ class ProblemService (
             if (decodedCursor != null) {
                 val greaterDifficulty = cb.greaterThan(root.get("difficulty"), decodedCursor.lastSeenDifficulty)
 
-                val equalDifficulty = cb.equal(root.get<ProblemDifficulty>("difficulty"), decodedCursor.lastSeenDifficulty)
+                val equalDifficulty =
+                    cb.equal(root.get<ProblemDifficulty>("difficulty"), decodedCursor.lastSeenDifficulty)
                 val greaterId = cb.greaterThan(root.get<Int>("id"), decodedCursor.lastSeenId)
                 val sameDifficultyNextId = cb.and(equalDifficulty, greaterId)
 
