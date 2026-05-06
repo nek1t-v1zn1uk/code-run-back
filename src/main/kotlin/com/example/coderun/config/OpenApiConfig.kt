@@ -12,6 +12,7 @@ import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.media.Content
 import io.swagger.v3.oas.models.media.MediaType
 import io.swagger.v3.oas.models.media.Schema
+import io.swagger.v3.oas.models.responses.ApiResponse
 import org.springdoc.core.customizers.OpenApiCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -36,6 +37,30 @@ import org.springframework.context.annotation.Configuration
     `in` = SecuritySchemeIn.HEADER
 )
 class OpenApiConfig {
+
+    @Bean
+    fun globalResponseCustomizer(): OpenApiCustomizer {
+        return OpenApiCustomizer { openApi ->
+            openApi.paths.values.forEach { pathItem ->
+                pathItem.readOperations().forEach { operation ->
+                    val responses = operation.responses
+
+                    // Add 500 Internal Server Error if missing
+                    if (!responses.containsKey("500")) {
+                        responses.addApiResponse("500", ApiResponse()
+                            .description("Internal Server Error")
+                            .content(
+                                Content().addMediaType(
+                                "application/json",
+                                MediaType().schema(Schema<Any>().`$ref`("#/components/schemas/ApiErrorResponse"))
+                                )
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
 
     @Bean
     fun errorResponseCustomizer(): OpenApiCustomizer {

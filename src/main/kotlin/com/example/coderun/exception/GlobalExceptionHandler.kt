@@ -4,6 +4,7 @@ import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -27,6 +28,14 @@ class GlobalExceptionHandler {
             message = ex.message
         )
         return ResponseEntity(error, HttpStatus.CONFLICT)
+    }
+    @ExceptionHandler(AuthenticationException::class)
+    fun handleEntityExists(ex: AuthenticationException): ResponseEntity<ApiErrorResponse> {
+        val error = ApiErrorResponse(
+            status = HttpStatus.UNAUTHORIZED.value(),
+            message = ex.message
+        )
+        return ResponseEntity(error, HttpStatus.UNAUTHORIZED)
     }
 
     // Handle Request Validation Errors (@Valid)
