@@ -1,6 +1,9 @@
 package com.example.coderun.domain.users
 
 import jakarta.persistence.*
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 import java.time.Instant
 
 @Entity
@@ -27,4 +30,13 @@ data class User(
 
     @Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now()
-)
+) : UserDetails {
+    override fun getAuthorities(): Collection<GrantedAuthority> {
+        return listOf(SimpleGrantedAuthority("ROLE_USER"))
+    }
+
+    override fun getPassword() = passwordHash
+
+    override fun getUsername() = email
+
+}

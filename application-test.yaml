@@ -2,12 +2,12 @@ spring:
   config:
     import: "optional:file:.env[.properties]"
   datasource:
-    url: ${POSTGRES_URL}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: ${TEST_POSTGRES_URL}
+    username: ${TEST_POSTGRES_USER}
+    password: ${TEST_POSTGRES_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
@@ -16,7 +16,7 @@ spring:
     property-naming-strategy: SNAKE_CASE
   flyway:
     enabled: true
-    url: ${POSTGRES_URL}
-    user: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: ${TEST_POSTGRES_URL}
+    user: ${TEST_POSTGRES_USER}
+    password: ${TEST_POSTGRES_PASSWORD}
     locations: classpath:db/migration
