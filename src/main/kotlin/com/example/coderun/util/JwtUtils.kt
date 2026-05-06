@@ -14,10 +14,10 @@ import java.util.Date
 @Component
 class JwtUtils {
 
-    @Value($$"${jwt.secret}")
+    @Value($$"${JWT_SECRET}")
     private lateinit var secret: String
 
-    @Value($$"${jwt.expiration}")
+    @Value($$"${JWT_EXPIRATION}")
     private var expiration: Long = 604800000
 
     private fun getSignInKey(): Key {
