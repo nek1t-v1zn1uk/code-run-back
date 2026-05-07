@@ -1,15 +1,22 @@
 package com.example.coderun.domain.problems.controller
 
+import com.example.coderun.config.ValidatesInput
 import com.example.coderun.domain.problems.dto.GetProblemsRequest
+import com.example.coderun.domain.problems.dto.ProblemDto
+import com.example.coderun.domain.problems.dto.ProblemPageResponse
+import com.example.coderun.domain.problems.entity.ProblemTopic
 import com.example.coderun.domain.problems.service.ProblemService
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.persistence.EntityNotFoundException
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -19,22 +26,21 @@ class ProblemController (
     private val problemService: ProblemService,
 ) {
     @GetMapping("/topics")
-    fun getProblemTopics(): ResponseEntity<*> {
+    @ResponseStatus(HttpStatus.OK)
+    fun getProblemTopics(): ResponseEntity<List<ProblemTopic>> {
         val problemTopics = problemService.getProblemTopics()
         return ResponseEntity.ok(problemTopics)
     }
     @GetMapping("/{id}")
-    fun getProblemById(@PathVariable id: Int): ResponseEntity<*> {
-        return try {
-            val problemDto = problemService.getProblemDto(id)
-            ResponseEntity.ok(problemDto)
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapOf("message" to e.message))
-        }
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "404", description = "Problem not found")
+    fun getProblemById(@PathVariable id: Int): ResponseEntity<ProblemDto> {
+        return ResponseEntity.ok(problemService.getProblemDto(id))
     }
     @GetMapping
-    fun getProblems(@ModelAttribute request: GetProblemsRequest): ResponseEntity<*> {
-        val problemsDto = problemService.getProblemWrapped(request)
-        return ResponseEntity.ok(problemsDto)
+    @ResponseStatus(HttpStatus.OK)
+    @ValidatesInput
+    fun getProblems(@Valid @ModelAttribute request: GetProblemsRequest): ResponseEntity<ProblemPageResponse> {
+        return ResponseEntity.ok(problemService.getProblemsWrapped(request))
     }
 }

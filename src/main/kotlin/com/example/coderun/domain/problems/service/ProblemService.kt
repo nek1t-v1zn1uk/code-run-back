@@ -32,7 +32,7 @@ class ProblemService (
             ?: throw EntityNotFoundException("Problem with id: $id not found")
         return problem.toProblemDto()
     }
-    fun getProblemWrapped(request: GetProblemsRequest): ProblemPageResponse {
+    fun getProblemsWrapped(request: GetProblemsRequest): ProblemPageResponse {
         // build specification for query
         val spec = Specification<Problem> { root, query, cb ->
             val predicates = mutableListOf<Predicate>()

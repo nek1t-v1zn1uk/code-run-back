@@ -3,9 +3,10 @@ package com.example.coderun.domain.problems.dto
 import com.example.coderun.domain.problems.entity.EvaluationType
 import com.example.coderun.domain.problems.entity.ProblemDifficulty
 import com.example.coderun.domain.problems.entity.ProblemTopic
+import com.fasterxml.jackson.databind.annotation.EnumNaming
 import java.time.Instant
 
-data class ProblemDto (
+data class ProblemDto(
     var id: Int,
     var title: String,
     var topic: ProblemTopic? = null,
@@ -18,19 +19,21 @@ data class ProblemDto (
     var createdAt: Instant
 )
 
-data class GetProblemsRequest (
+data class GetProblemsRequest(
     val difficulty: ProblemDifficulty?,
     val topicName: String?,
     val limit: Int = 10,
     val cursor: String?,
 )
-data class ProblemPageResponse (
+
+data class ProblemPageResponse(
     val content: List<ProblemDto>,
     val hasNext: Boolean,
     val nextCursor: String?,
     val isEmpty: Boolean = content.isEmpty()
 )
-data class ProblemCursor (
+
+data class ProblemCursor(
     val lastSeenId: Int,
     val lastSeenDifficulty: Int // Int for the Ordinal value
 )
