@@ -63,6 +63,9 @@ class ProblemService (
 
         return updatedProblem.toProblemDto()
     }
+    fun deleteProblem(problemId: Int) {
+        problemRepository.deleteById(problemId)
+    }
 
     fun getProblemTopics(): List<ProblemTopic> {
         val problemTopics = problemTopicRepository.findAll()

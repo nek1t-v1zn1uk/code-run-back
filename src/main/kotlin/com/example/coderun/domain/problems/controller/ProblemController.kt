@@ -14,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PatchMapping
@@ -43,6 +44,13 @@ class ProblemController (
     @ApiResponse(responseCode = "404", description = "Problem not found")
     fun updateProblem(@PathVariable problemId: Int, @Valid @RequestBody request: UpdateProblemRequest): ResponseEntity<ProblemDto> {
         return ResponseEntity.ok(problemService.updateProblem(problemId, request))
+    }
+    @DeleteMapping("/{problemId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponse(responseCode = "404", description = "Problem not found")
+    fun deleteProblem(@PathVariable problemId: Int): ResponseEntity<Unit> {
+        problemService.deleteProblem(problemId)
+        return ResponseEntity.noContent().build()
     }
 
     @GetMapping("/topics")
