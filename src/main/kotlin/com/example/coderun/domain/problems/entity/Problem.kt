@@ -1,7 +1,7 @@
 package com.example.coderun.domain.problems.entity
 
 import com.example.coderun.domain.problems.dto.ProblemDto
-import com.example.coderun.domain.tests.ScriptChecker
+import com.example.coderun.domain.tests.entity.ScriptChecker
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes

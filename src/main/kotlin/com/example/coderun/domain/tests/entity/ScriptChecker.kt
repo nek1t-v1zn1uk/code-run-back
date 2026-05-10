@@ -1,4 +1,4 @@
-package com.example.coderun.domain.tests
+package com.example.coderun.domain.tests.entity
 
 import com.example.coderun.domain.solutions.AvailableLanguage
 import jakarta.persistence.Column
