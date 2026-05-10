@@ -3,6 +3,8 @@ package com.example.coderun.domain.problems.entity
 import com.example.coderun.domain.problems.dto.ProblemDto
 import com.example.coderun.domain.tests.ScriptChecker
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.time.Instant
 
 @Entity
@@ -32,7 +34,8 @@ data class Problem(
     @Column(name = "execution_memory_limit_kb", nullable = false)
     var executionMemoryLimitKb: Int,
 
-    @Column(name = "default_evaluation_type")
+    @Column(name = "default_evaluation_type", columnDefinition = "evaluation_types")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     var defaultEvaluationType: EvaluationType? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)

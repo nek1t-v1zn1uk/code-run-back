@@ -1,5 +1,6 @@
 package com.example.coderun.domain.problems.service
 
+import com.example.coderun.domain.problems.dto.CreateProblemRequest
 import com.example.coderun.domain.problems.dto.GetProblemsRequest
 import com.example.coderun.domain.problems.dto.ProblemCursor
 import com.example.coderun.domain.problems.dto.ProblemDto
@@ -23,6 +24,24 @@ class ProblemService (
     private val problemRepository: ProblemRepository,
     private val problemTopicRepository: ProblemTopicRepository,
 ) {
+    fun createProblem(request: CreateProblemRequest): ProblemDto {
+        val topic =
+            if(request.topic == null) null
+            else problemTopicRepository.findByName(request.topic)
+                ?: throw EntityNotFoundException("Problem topic with name \"${request.topic}\" not found")
+
+        val createdProblem = problemRepository.save(Problem(
+            title = request.title,
+            topic = topic,
+            difficulty = request.difficulty!!,
+            statement = request.statement,
+            executionTimeLimitMs = request.executionTimeLimitMs,
+            executionMemoryLimitKb = request.executionMemoryLimitKb,
+            defaultEvaluationType = request.defaultEvaluationType!!
+        ))
+        return createdProblem.toProblemDto()
+    }
+
     fun getProblemTopics(): List<ProblemTopic> {
         val problemTopics = problemTopicRepository.findAll()
         return problemTopics

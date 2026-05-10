@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ProblemTopicRepository : JpaRepository<ProblemTopic, String> {
-
+    fun findByName(name: String): ProblemTopic?
 }

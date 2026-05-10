@@ -1,26 +1,26 @@
 CREATE TYPE "problem_difficulties" AS ENUM (
-  'very_easy',
-  'easy',
-  'medium',
-  'hard',
-  'very_hard'
+  'VERY_EASY',
+  'EASY',
+  'MEDIUM',
+  'HARD',
+  'VERY_HARD'
 );
 CREATE TYPE "evaluation_types" AS ENUM (
-  'exact_match',
-  'script_check'
+  'EXACT_MATCH',
+  'SCRIPT_CHECK'
 );
 CREATE TYPE "solution_statuses" AS ENUM (
-  'in_queue',
-  'compiling',
-  'compilation_error',
-  'execution',
-  'runtime_error',
-  'success',
-  'test_failed',
-  'time_limit_exceeded',
-  'memory_limit_exceeded',
-  'output_limit_exceeded',
-  'internal_error'
+  'IN_QUEUE',
+  'COMPILING',
+  'COMPILATION_ERROR',
+  'EXECUTION',
+  'RUNTIME_ERROR',
+  'SUCCESS',
+  'TEST_FAILED',
+  'TIME_LIMIT_EXCEEDED',
+  'MEMORY_LIMIT_EXCEEDED',
+  'OUTPUT_LIMIT_EXCEEDED',
+  'INTERNAL_ERROR'
 );
 
 CREATE TABLE IF NOT EXISTS "users" (
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS "solutions" (
   "user_id" int NOT NULL,
   "code" text,
   "language_id" int NOT NULL,
-  "status" solution_statuses NOT NULL DEFAULT 'in_queue',
+  "status" solution_statuses NOT NULL DEFAULT 'IN_QUEUE',
   "test_case_reached" int,
   "execution_time_ms" int,
   "execution_memory_kb" int,

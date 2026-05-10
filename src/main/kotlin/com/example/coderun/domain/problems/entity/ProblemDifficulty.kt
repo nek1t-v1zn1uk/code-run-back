@@ -10,7 +10,7 @@ enum class ProblemDifficulty {
     HARD,
     VERY_HARD;
 
-    @Converter(autoApply = true)
+/*    @Converter(autoApply = true)
     class ProblemDifficultyConverter : AttributeConverter<ProblemDifficulty, String> {
         override fun convertToDatabaseColumn(attribute: ProblemDifficulty?): String? {
             return attribute?.name?.lowercase()
@@ -19,5 +19,5 @@ enum class ProblemDifficulty {
         override fun convertToEntityAttribute(dbData: String?): ProblemDifficulty? {
             return dbData?.let { valueOf(it.uppercase()) }
         }
-    }
+    }*/
 }

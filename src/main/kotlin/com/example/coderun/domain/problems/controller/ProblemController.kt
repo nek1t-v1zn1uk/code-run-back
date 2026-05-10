@@ -1,6 +1,7 @@
 package com.example.coderun.domain.problems.controller
 
 import com.example.coderun.config.ValidatesInput
+import com.example.coderun.domain.problems.dto.CreateProblemRequest
 import com.example.coderun.domain.problems.dto.GetProblemsRequest
 import com.example.coderun.domain.problems.dto.ProblemDto
 import com.example.coderun.domain.problems.dto.ProblemPageResponse
@@ -15,6 +16,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
@@ -25,6 +28,13 @@ import org.springframework.web.bind.annotation.RestController
 class ProblemController (
     private val problemService: ProblemService,
 ) {
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @ValidatesInput
+    fun createProblem(@Valid @RequestBody request: CreateProblemRequest): ResponseEntity<ProblemDto> {
+        return ResponseEntity.status(HttpStatus.CREATED).body(problemService.createProblem(request))
+    }
+
     @GetMapping("/topics")
     @ResponseStatus(HttpStatus.OK)
     fun getProblemTopics(): ResponseEntity<List<ProblemTopic>> {
