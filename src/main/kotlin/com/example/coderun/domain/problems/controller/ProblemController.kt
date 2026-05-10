@@ -5,6 +5,7 @@ import com.example.coderun.domain.problems.dto.CreateProblemRequest
 import com.example.coderun.domain.problems.dto.GetProblemsRequest
 import com.example.coderun.domain.problems.dto.ProblemDto
 import com.example.coderun.domain.problems.dto.ProblemPageResponse
+import com.example.coderun.domain.problems.dto.UpdateProblemRequest
 import com.example.coderun.domain.problems.entity.ProblemTopic
 import com.example.coderun.domain.problems.service.ProblemService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -31,8 +33,16 @@ class ProblemController (
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @ValidatesInput
+    @ApiResponse(responseCode = "404", description = "Problem topic not found")
     fun createProblem(@Valid @RequestBody request: CreateProblemRequest): ResponseEntity<ProblemDto> {
         return ResponseEntity.status(HttpStatus.CREATED).body(problemService.createProblem(request))
+    }
+    @PatchMapping("/{problemId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ValidatesInput
+    @ApiResponse(responseCode = "404", description = "Problem not found")
+    fun updateProblem(@PathVariable problemId: Int, @Valid @RequestBody request: UpdateProblemRequest): ResponseEntity<ProblemDto> {
+        return ResponseEntity.ok(problemService.updateProblem(problemId, request))
     }
 
     @GetMapping("/topics")

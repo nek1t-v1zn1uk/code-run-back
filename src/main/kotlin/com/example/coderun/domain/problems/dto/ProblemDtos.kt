@@ -31,7 +31,7 @@ data class CreateProblemRequest(
     val title: String = "",
 
     @field:Size(min = 3, max = 32)
-    val topic: String?,
+    val topic: String? = null,
 
     @field:NotNull
     @field:Schema(implementation = ProblemDifficulty::class)
@@ -54,6 +54,30 @@ data class CreateProblemRequest(
     @field:NotNull
     @field:Schema(implementation = EvaluationType::class)
     val defaultEvaluationType: EvaluationType?
+)
+data class UpdateProblemRequest(
+    @field:Size(min = 3, max = 255)
+    val title: String? = null,
+
+    @field:Size(min = 3, max = 32)
+    val topic: String? = null,
+
+    @field:Schema(implementation = ProblemDifficulty::class)
+    val difficulty: ProblemDifficulty? = null,
+
+    @field:Size(min = 10, max = 10000)
+    val statement: String? = null,
+
+    @field:Min(500)
+    @field:Max(10000)
+    val executionTimeLimitMs: Int? = null,
+
+    @field:Min(512)
+    @field:Max(512*1024)
+    val executionMemoryLimitKb: Int? = null,
+
+    @field:Schema(implementation = EvaluationType::class)
+    val defaultEvaluationType: EvaluationType? = null
 )
 data class GetProblemsRequest(
     val difficulty: ProblemDifficulty?,
