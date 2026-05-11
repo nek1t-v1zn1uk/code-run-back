@@ -1,0 +1,8 @@
+POST {{server}}/api/v1/problems/8/solutions
+Content-Type: application/json
+Authorization: Bearer {{auth.token}}
+
+{
+  "code": "s = input()\nprint(s[0] + ' ' + s[1])",
+  "language": "python"
+}

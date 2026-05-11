@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Configuration
         Tag(name = "Authentication"),
         Tag(name = "Code Execution"),
         Tag(name = "Problems"),
+        Tag(name = "Solutions"),
     ]
 )
 @SecurityScheme(
@@ -103,7 +104,8 @@ class SwaggerTagOrderConfig {
             "Server Healthcheck",
             "Authentication",
             "Code Execution",
-            "Problems"
+            "Problems",
+            "Solutions"
         )
 
         return OpenApiCustomizer { openApi ->

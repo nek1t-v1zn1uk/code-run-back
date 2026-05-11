@@ -16,7 +16,7 @@ enum class SolutionStatus {
     OUTPUT_LIMIT_EXCEEDED,
     INTERNAL_ERROR;
 
-    @Converter(autoApply = true)
+    /*@Converter(autoApply = true)
     class SolutionStatusConverter : AttributeConverter<SolutionStatus, String> {
         override fun convertToDatabaseColumn(attribute: SolutionStatus?): String? {
             return attribute?.name?.lowercase()
@@ -25,5 +25,5 @@ enum class SolutionStatus {
         override fun convertToEntityAttribute(dbData: String?): SolutionStatus? {
             return dbData?.let { valueOf(it.uppercase()) }
         }
-    }
+    }*/
 }

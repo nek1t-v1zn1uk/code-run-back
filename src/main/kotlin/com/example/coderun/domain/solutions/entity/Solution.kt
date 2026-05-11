@@ -1,8 +1,11 @@
 package com.example.coderun.domain.solutions.entity
 
 import com.example.coderun.domain.problems.entity.Problem
+import com.example.coderun.domain.solutions.dto.SolutionDto
 import com.example.coderun.domain.users.User
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.time.Instant
 
 @Entity
@@ -27,7 +30,8 @@ data class Solution(
     @JoinColumn(name = "language_id", nullable = false)
     var language: AvailableLanguage,
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "solution_statuses")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     var status: SolutionStatus = SolutionStatus.IN_QUEUE,
 
     @Column(name = "test_case_reached")
@@ -44,4 +48,17 @@ data class Solution(
 
     @Column(name = "executed_at")
     var executedAt: Instant? = null
-)
+) {
+    fun toDto() = SolutionDto(
+        id = this.id!!,
+        problemId = this.problem.id!!,
+        userId = this.user.id!!,
+        code = this.code!!,
+        language = this.language,
+        testCaseReached = this.testCaseReached,
+        executionTimeMs = this.executionTimeMs,
+        executionMemoryKb = this.executionMemoryKb,
+        sentAt = this.sentAt,
+        executedAt = this.executedAt
+    )
+}
