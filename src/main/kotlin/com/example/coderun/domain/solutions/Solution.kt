@@ -1,7 +1,6 @@
 package com.example.coderun.domain.solutions
 
-import com.example.coderun.domain.solutions.AvailableLanguage
-import com.example.coderun.domain.problems.Problem
+import com.example.coderun.domain.problems.entity.Problem
 import com.example.coderun.domain.users.User
 import jakarta.persistence.*
 import java.time.Instant

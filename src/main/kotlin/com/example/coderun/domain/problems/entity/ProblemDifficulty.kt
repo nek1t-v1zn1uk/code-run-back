@@ -1,4 +1,4 @@
-package com.example.coderun.domain.problems
+package com.example.coderun.domain.problems.entity
 
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
@@ -10,14 +10,14 @@ enum class ProblemDifficulty {
     HARD,
     VERY_HARD;
 
-    @Converter(autoApply = true)
+/*    @Converter(autoApply = true)
     class ProblemDifficultyConverter : AttributeConverter<ProblemDifficulty, String> {
         override fun convertToDatabaseColumn(attribute: ProblemDifficulty?): String? {
             return attribute?.name?.lowercase()
         }
 
         override fun convertToEntityAttribute(dbData: String?): ProblemDifficulty? {
-            return dbData?.let { ProblemDifficulty.valueOf(it.uppercase()) }
+            return dbData?.let { valueOf(it.uppercase()) }
         }
-    }
+    }*/
 }

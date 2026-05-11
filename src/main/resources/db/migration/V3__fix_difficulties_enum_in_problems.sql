@@ -1,10 +1,10 @@
 ALTER TABLE problems ALTER COLUMN difficulty TYPE INTEGER USING (
     CASE difficulty::text
-        WHEN 'very_easy' THEN 0
-        WHEN 'easy' THEN 1
-        WHEN 'medium' THEN 2
-        WHEN 'hard' THEN 3
-        WHEN 'very_hard' THEN 4
+        WHEN 'VERY_EASY' THEN 0
+        WHEN 'EASY' THEN 1
+        WHEN 'MEDIUM' THEN 2
+        WHEN 'HARD' THEN 3
+        WHEN 'VERY_HARD' THEN 4
         ELSE 0
         END
     );

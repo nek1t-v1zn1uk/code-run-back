@@ -1,5 +1,16 @@
-package com.example.coderun.domain.problems
+package com.example.coderun.domain.problems.service
 
+import com.example.coderun.domain.problems.dto.CreateProblemRequest
+import com.example.coderun.domain.problems.dto.GetProblemsRequest
+import com.example.coderun.domain.problems.dto.ProblemCursor
+import com.example.coderun.domain.problems.dto.ProblemDto
+import com.example.coderun.domain.problems.dto.ProblemPageResponse
+import com.example.coderun.domain.problems.dto.UpdateProblemRequest
+import com.example.coderun.domain.problems.entity.Problem
+import com.example.coderun.domain.problems.entity.ProblemDifficulty
+import com.example.coderun.domain.problems.entity.ProblemTopic
+import com.example.coderun.domain.problems.repository.ProblemRepository
+import com.example.coderun.domain.problems.repository.ProblemTopicRepository
 import com.example.coderun.util.CursorUtil
 import jakarta.persistence.EntityNotFoundException
 import jakarta.persistence.criteria.Predicate
@@ -14,6 +25,48 @@ class ProblemService (
     private val problemRepository: ProblemRepository,
     private val problemTopicRepository: ProblemTopicRepository,
 ) {
+    fun createProblem(request: CreateProblemRequest): ProblemDto {
+        val topic =
+            if(request.topic == null) null
+            else problemTopicRepository.findByName(request.topic)
+                ?: throw EntityNotFoundException("Problem topic with name \"${request.topic}\" not found")
+
+        val createdProblem = problemRepository.save(Problem(
+            title = request.title,
+            topic = topic,
+            difficulty = request.difficulty!!,
+            statement = request.statement,
+            executionTimeLimitMs = request.executionTimeLimitMs,
+            executionMemoryLimitKb = request.executionMemoryLimitKb,
+            defaultEvaluationType = request.defaultEvaluationType!!
+        ))
+        return createdProblem.toProblemDto()
+    }
+    fun updateProblem(problemId: Int, request: UpdateProblemRequest): ProblemDto {
+        val topic =
+            if(request.topic == null) null
+            else problemTopicRepository.findByName(request.topic)
+                ?: throw EntityNotFoundException("Problem topic with name \"${request.topic}\" not found")
+
+        val problem = problemRepository.findById(problemId).getOrNull()
+            ?: throw EntityNotFoundException("Problem with id $problemId not found")
+
+        request.title?.let { problem.title = it }
+        topic?.let { problem.topic = it }
+        request.difficulty?.let { problem.difficulty = it }
+        request.statement?.let { problem.statement = it }
+        request.executionTimeLimitMs?.let { problem.executionTimeLimitMs = it }
+        request.executionMemoryLimitKb?.let { problem.executionMemoryLimitKb = it }
+        request.defaultEvaluationType?.let { problem.defaultEvaluationType = it }
+
+        val updatedProblem = problemRepository.save(problem)
+
+        return updatedProblem.toProblemDto()
+    }
+    fun deleteProblem(problemId: Int) {
+        problemRepository.deleteById(problemId)
+    }
+
     fun getProblemTopics(): List<ProblemTopic> {
         val problemTopics = problemTopicRepository.findAll()
         return problemTopics
@@ -23,7 +76,7 @@ class ProblemService (
             ?: throw EntityNotFoundException("Problem with id: $id not found")
         return problem.toProblemDto()
     }
-    fun getProblemWrapped(request: GetProblemsRequest): ProblemPageResponse {
+    fun getProblemsWrapped(request: GetProblemsRequest): ProblemPageResponse {
         // build specification for query
         val spec = Specification<Problem> { root, query, cb ->
             val predicates = mutableListOf<Predicate>()
@@ -43,7 +96,8 @@ class ProblemService (
             if (decodedCursor != null) {
                 val greaterDifficulty = cb.greaterThan(root.get("difficulty"), decodedCursor.lastSeenDifficulty)
 
-                val equalDifficulty = cb.equal(root.get<ProblemDifficulty>("difficulty"), decodedCursor.lastSeenDifficulty)
+                val equalDifficulty =
+                    cb.equal(root.get<ProblemDifficulty>("difficulty"), decodedCursor.lastSeenDifficulty)
                 val greaterId = cb.greaterThan(root.get<Int>("id"), decodedCursor.lastSeenId)
                 val sameDifficultyNextId = cb.and(equalDifficulty, greaterId)
 
