@@ -31,3 +31,36 @@ Authorization: Bearer {{auth.token}}
 ### Deleting problem
 DELETE {{server}}/api/v1/problems/1
 Authorization: Bearer {{auth.token}}
+
+### Updating list of tests
+POST {{server}}/api/v1/problems/8/tests
+Content-Type: application/json
+Authorization: Bearer {{auth.token}}
+
+{
+    "new_tests": [
+      {
+        "ordinal": 2,
+        "is_example": true,
+        "input_data": "24",
+        "expected_output": "2 4"
+      },
+      {
+        "ordinal": 3,
+        "is_example": false,
+        "input_data": "11",
+        "expected_output": "1 1"
+      }
+    ],
+    "update_tests": [
+      {
+        "id": 4,
+        "ordinal": 1
+      }
+    ],
+    "delete_tests": [
+      {
+        "id": 3
+      }
+    ]
+}

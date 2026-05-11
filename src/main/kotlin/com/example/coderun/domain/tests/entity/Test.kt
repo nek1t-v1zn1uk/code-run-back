@@ -12,6 +12,8 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.time.Instant
 
 @Entity
@@ -37,7 +39,8 @@ data class Test(
     @Column(name = "expected_output")
     var expectedOutput: String? = null,
 
-    @Column(name = "override_evaluation_type")
+    @Column(name = "override_evaluation_type", columnDefinition = "evaluation_types")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     var overrideEvaluationType: EvaluationType? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
