@@ -1,6 +1,6 @@
 package com.example.coderun.domain.tests.entity
 
-import com.example.coderun.domain.solutions.AvailableLanguage
+import com.example.coderun.domain.solutions.entity.AvailableLanguage
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType

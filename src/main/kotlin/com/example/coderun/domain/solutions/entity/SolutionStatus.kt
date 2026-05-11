@@ -1,4 +1,4 @@
-package com.example.coderun.domain.solutions
+package com.example.coderun.domain.solutions.entity
 
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
@@ -23,7 +23,7 @@ enum class SolutionStatus {
         }
 
         override fun convertToEntityAttribute(dbData: String?): SolutionStatus? {
-            return dbData?.let { SolutionStatus.valueOf(it.uppercase()) }
+            return dbData?.let { valueOf(it.uppercase()) }
         }
     }
 }

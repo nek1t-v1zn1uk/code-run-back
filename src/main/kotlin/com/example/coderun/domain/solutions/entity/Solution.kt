@@ -1,4 +1,4 @@
-package com.example.coderun.domain.solutions
+package com.example.coderun.domain.solutions.entity
 
 import com.example.coderun.domain.problems.entity.Problem
 import com.example.coderun.domain.users.User
