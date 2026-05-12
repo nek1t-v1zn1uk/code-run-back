@@ -1,6 +1,9 @@
 package com.example.coderun.domain.users
 
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcType
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -28,11 +31,15 @@ data class User(
     @Column(name = "password_hash", nullable = false)
     var passwordHash: String,
 
+    @Column(nullable = false, columnDefinition = "user_roles")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    var role: UserRoles = UserRoles.USER,
+
     @Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now()
 ) : UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority> {
-        return listOf(SimpleGrantedAuthority("ROLE_USER"))
+        return listOf(SimpleGrantedAuthority("ROLE_" + role.name))
     }
 
     override fun getPassword() = passwordHash
