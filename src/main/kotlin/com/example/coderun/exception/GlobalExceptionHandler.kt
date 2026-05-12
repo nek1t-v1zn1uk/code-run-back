@@ -29,8 +29,16 @@ class GlobalExceptionHandler {
         )
         return ResponseEntity(error, HttpStatus.CONFLICT)
     }
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgument(ex: IllegalArgumentException): ResponseEntity<ApiErrorResponse> {
+        val error = ApiErrorResponse(
+            status = HttpStatus.BAD_REQUEST.value(),
+            message = ex.message
+        )
+        return ResponseEntity(error, HttpStatus.BAD_REQUEST)
+    }
     @ExceptionHandler(AuthenticationException::class)
-    fun handleEntityExists(ex: AuthenticationException): ResponseEntity<ApiErrorResponse> {
+    fun handleAuthentication(ex: AuthenticationException): ResponseEntity<ApiErrorResponse> {
         val error = ApiErrorResponse(
             status = HttpStatus.UNAUTHORIZED.value(),
             message = ex.message

@@ -3,6 +3,7 @@ package com.example.coderun.domain.isolaterunner
 data class IsolateCodeResult(
     val status: String, // OK, TO, RE ...
     val exitCode: Int,
+    val exitSignal: Int,
     val time: Double,
     val memory: Long,
     val stdout: String,

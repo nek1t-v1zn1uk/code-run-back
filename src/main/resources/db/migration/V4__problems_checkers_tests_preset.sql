@@ -5,6 +5,7 @@ INSERT INTO problem_topics VALUES
 ('Dynamic Programming'),
 ('Graphs');
 
+-- EXACT_MATCH problems
 INSERT INTO problems
     (title, topic, difficulty, statement, execution_time_limit_ms, execution_memory_limit_kb,
      default_evaluation_type) VALUES
@@ -68,3 +69,47 @@ A single line contains 10 integers, each representing the number of times the co
 Output the index of the largest Fibonacci number that can be constructed, or −1 if it is impossible to construct such a number using the given digits.',
 1000, 64*1024, 'EXACT_MATCH'
 );
+
+-- SCRIPT_CHECKER problems
+INSERT INTO script_checkers (name, language_id, code) VALUES
+(
+'Default Script Checker', 3,
+'output = input()
+input_data = input()
+expected_output = input()
+
+if expected_output == output:
+    print(True)
+else:
+    print(False)
+'
+);
+
+INSERT INTO problems
+    (title, topic, difficulty, statement, execution_time_limit_ms, execution_memory_limit_kb,
+     default_evaluation_type, default_script_checker_id) VALUES
+('Test Script Checker Problem', 'For Beginners', 0,
+  'Write a program that reads a two-digit integer and outputs both digits separated by a space.
+  # Input
+  A single integer n where 10≤n≤99.
+  # Output
+  Output the two digits of the number, separated by a space.',
+  1000, 128*1024, 'SCRIPT_CHECK', 1
+);
+
+-- Tests
+INSERT INTO tests
+    (problem_id, ordinal, is_example, input_data, expected_output) VALUES
+(1, 1, true, '11', '1 1'),
+(1, 2, true, '67', '6 7'),
+(1, 3, false, '14', '1 4'),
+(1, 4, false, '41', '4 1'),
+(1, 5, false, '45', '4 5');
+
+INSERT INTO tests
+(problem_id, ordinal, is_example, input_data, expected_output) VALUES
+(8, 1, true, '11', '1 1'),
+(8, 2, true, '67', '6 7'),
+(8, 3, false, '14', '1 4'),
+(8, 4, false, '41', '4 1'),
+(8, 5, false, '45', '4 5');

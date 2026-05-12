@@ -1,0 +1,68 @@
+package com.example.coderun.domain.solutions.service
+
+import com.example.coderun.domain.problems.repository.ProblemRepository
+import com.example.coderun.domain.solutions.dto.SendSolutionRequest
+import com.example.coderun.domain.solutions.dto.SolutionDto
+import com.example.coderun.domain.solutions.entity.Solution
+import com.example.coderun.domain.solutions.repository.AvailableLanguageRepository
+import com.example.coderun.domain.solutions.repository.SolutionRepository
+import com.example.coderun.domain.users.User
+import jakarta.persistence.EntityNotFoundException
+import jakarta.transaction.Transactional
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrNull
+
+@Service
+class SolutionService(
+    private val solutionRepository: SolutionRepository,
+    private val problemRepository: ProblemRepository,
+    private val languageRepository: AvailableLanguageRepository,
+    private val evaluationService: SolutionEvaluationService,
+) {
+    @Transactional
+    fun createSolution(problemId: Int, request: SendSolutionRequest): SolutionDto {
+        val problem = problemRepository.findById(problemId).getOrNull()
+            ?: throw EntityNotFoundException("Problem with id '$problemId' not found")
+
+        val language =
+            when(languageRepository.countByLanguage(request.language)) {
+                0 -> throw EntityNotFoundException("Language '${request.language}' not found")
+                1 -> languageRepository.findByLanguage(request.language)!!
+                else ->
+                    request.languageVersion?.let{
+                        languageRepository.findByLanguageAndVersion(request.language, request.languageVersion)
+                            ?: throw EntityNotFoundException("Language '${request.language}' with version '${request.languageVersion}' not found")
+                    } ?: throw IllegalArgumentException("Language '${request.language}' must have specified version")
+            }
+
+        val authentication = SecurityContextHolder.getContext().authentication!!
+        val user = authentication.principal as User
+
+        val newSolution = solutionRepository.save(
+            Solution(
+                problem = problem,
+                user = user,
+                code = request.code,
+                language = language
+            )
+        )
+
+        evaluationService.enqueueSolution(newSolution)
+
+        return newSolution.toDto()
+    }
+
+    fun getSolutionDto(solutionId: Int): SolutionDto {
+        val authentication = SecurityContextHolder.getContext().authentication!!
+        val user = authentication.principal as User
+
+        val solution = solutionRepository.findById(solutionId).getOrNull()
+            ?: throw EntityNotFoundException("Solution with id '$solutionId' not found")
+
+        if (solution.user.id != user.id)
+            throw EntityNotFoundException("Solution with id '$solutionId' not found")
+
+        return solution.toDto()
+    }
+}
