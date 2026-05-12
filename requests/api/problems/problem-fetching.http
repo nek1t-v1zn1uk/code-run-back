@@ -1,0 +1,5 @@
+
+
+### Get Script Checker
+GET {{server}}/api/v1/script-checkers/1
+Authorization: Bearer {{auth.token}}
