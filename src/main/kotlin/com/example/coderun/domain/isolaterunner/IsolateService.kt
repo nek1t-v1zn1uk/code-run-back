@@ -74,6 +74,7 @@ class IsolateService {
         val result = IsolateCodeResult(
             status = metaData["status"] ?: "OK",
             exitCode = metaData["exitcode"]?.toInt() ?: 0,
+            exitSignal = metaData["exitsig"]?.toInt() ?: 0,
             time = metaData["time"]?.toDouble() ?: 0.0,
             memory = metaData["max-rss"]?.toLong() ?: 0L,
             stdout = stdout,

@@ -1,8 +1,49 @@
+### Send Success Solution
 POST {{server}}/api/v1/problems/8/solutions
 Content-Type: application/json
 Authorization: Bearer {{auth.token}}
 
 {
   "code": "s = input()\nprint(s[0] + ' ' + s[1])",
+  "language": "python"
+}
+
+### Send Test Failed Solution
+POST {{server}}/api/v1/problems/8/solutions
+Content-Type: application/json
+Authorization: Bearer {{auth.token}}
+
+{
+"code": "s = input()\nprint(s[0] + ' ' + s[0])",
+"language": "python"
+}
+
+### Send Time Exceed Solution
+POST {{server}}/api/v1/problems/8/solutions
+Content-Type: application/json
+Authorization: Bearer {{auth.token}}
+
+{
+  "code": "s = input()\nwhile True:\n    continue\nprint(s[0] + ' ' + s[1])",
+  "language": "python"
+}
+
+### Send Memory Exceed Solution
+POST {{server}}/api/v1/problems/8/solutions
+Content-Type: application/json
+Authorization: Bearer {{auth.token}}
+
+{
+  "code": "s = input()\ndata = b'x' * (150 * 1024 * 1024)",
+  "language": "python"
+}
+
+### Send Output Exceed Solution
+POST {{server}}/api/v1/problems/8/solutions
+Content-Type: application/json
+Authorization: Bearer {{auth.token}}
+
+{
+  "code": "import sys\nchunk = 'A' * 1024 * 1024\nsys.stdout.write(chunk)\nsys.stdout.flush()\nsys.stdout.write(chunk)\nsys.stdout.flush()",
   "language": "python"
 }

@@ -2,6 +2,7 @@ package com.example.coderun.domain.problems.entity
 
 import com.example.coderun.domain.problems.dto.ProblemDto
 import com.example.coderun.domain.tests.entity.ScriptChecker
+import com.example.coderun.domain.tests.entity.Test
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
@@ -43,7 +44,10 @@ data class Problem(
     var defaultScriptChecker: ScriptChecker? = null,
 
     @Column(name = "created_at", nullable = false)
-    var createdAt: Instant = Instant.now()
+    var createdAt: Instant = Instant.now(),
+
+    @OneToMany(mappedBy = "problem", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
+    val tests: MutableList<Test> = mutableListOf()
 ) {
     fun toProblemDto() = ProblemDto(
         id!!,

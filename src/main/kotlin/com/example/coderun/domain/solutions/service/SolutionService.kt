@@ -17,7 +17,8 @@ import kotlin.jvm.optionals.getOrNull
 class SolutionService(
     private val solutionRepository: SolutionRepository,
     private val problemRepository: ProblemRepository,
-    private val languageRepository: AvailableLanguageRepository
+    private val languageRepository: AvailableLanguageRepository,
+    private val evaluationService: SolutionEvaluationService,
 ) {
     @Transactional
     fun createSolution(problemId: Int, request: SendSolutionRequest): SolutionDto {
@@ -46,6 +47,8 @@ class SolutionService(
                 language = language
             )
         )
+
+        evaluationService.enqueueSolution(newSolution)
 
         return newSolution.toDto()
     }
