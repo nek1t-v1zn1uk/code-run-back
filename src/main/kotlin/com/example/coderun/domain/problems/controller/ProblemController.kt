@@ -1,5 +1,6 @@
 package com.example.coderun.domain.problems.controller
 
+import com.example.coderun.config.AdminOnly
 import com.example.coderun.config.ValidatesInput
 import com.example.coderun.domain.problems.dto.CreateProblemRequest
 import com.example.coderun.domain.problems.dto.GetProblemsRequest
@@ -14,6 +15,7 @@ import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
@@ -33,6 +35,7 @@ class ProblemController (
 ) {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @AdminOnly
     @ValidatesInput
     @ApiResponse(responseCode = "404", description = "Problem topic not found")
     fun createProblem(@Valid @RequestBody request: CreateProblemRequest): ResponseEntity<ProblemDto> {
@@ -40,6 +43,7 @@ class ProblemController (
     }
     @PatchMapping("/{problemId}")
     @ResponseStatus(HttpStatus.OK)
+    @AdminOnly
     @ValidatesInput
     @ApiResponse(responseCode = "404", description = "Problem not found")
     fun updateProblem(@PathVariable problemId: Int, @Valid @RequestBody request: UpdateProblemRequest): ResponseEntity<ProblemDto> {
@@ -47,6 +51,7 @@ class ProblemController (
     }
     @DeleteMapping("/{problemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @AdminOnly
     @ApiResponse(responseCode = "404", description = "Problem not found")
     fun deleteProblem(@PathVariable problemId: Int): ResponseEntity<Unit> {
         problemService.deleteProblem(problemId)
