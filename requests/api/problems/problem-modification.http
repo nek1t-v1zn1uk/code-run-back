@@ -65,7 +65,7 @@ Authorization: Bearer {{auth.token}}
     ]
 }
 
-### Creating ScriptChecker
+### Creating Script Checker
 POST {{server}}/api/v1/script-checkers
 Content-Type: application/json
 Authorization: Bearer {{auth.token}}
@@ -75,3 +75,19 @@ Authorization: Bearer {{auth.token}}
   "language": "python",
   "code": "random code"
 }
+
+### Update Script Checker
+PATCH {{server}}/api/v1/script-checkers/2
+Content-Type: application/json
+Authorization: Bearer {{auth.token}}
+
+{
+  "name": "Test2",
+  "language": "kotlin",
+  "code": "rarara"
+}
+
+### Delete Script Checker
+DELETE {{server}}/api/v1/script-checkers/3
+Content-Type: application/json
+Authorization: Bearer {{auth.token}}

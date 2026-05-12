@@ -29,3 +29,17 @@ data class CreateScriptCheckerRequest(
     @Size(max = 50_000)
     val code: String = "",
 )
+
+data class UpdateScriptCheckerRequest(
+    @Size(max = 255)
+    var name: String? = null,
+
+    @Size(max = 32)
+    val language: String? = null,
+
+    @Size(max = 32)
+    val languageVersion: String? = null,
+
+    @Size(max = 50_000)
+    val code: String? = null,
+)

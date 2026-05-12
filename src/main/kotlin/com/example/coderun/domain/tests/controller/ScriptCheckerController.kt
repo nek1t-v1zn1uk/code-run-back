@@ -3,6 +3,7 @@ package com.example.coderun.domain.tests.controller
 import com.example.coderun.config.ValidatesInput
 import com.example.coderun.domain.tests.dto.CreateScriptCheckerRequest
 import com.example.coderun.domain.tests.dto.ScriptCheckerDto
+import com.example.coderun.domain.tests.dto.UpdateScriptCheckerRequest
 import com.example.coderun.domain.tests.service.ScriptCheckerService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -26,5 +27,30 @@ class ScriptCheckerController(
         @Valid @RequestBody request: CreateScriptCheckerRequest
     ): ResponseEntity<ScriptCheckerDto> {
         return ResponseEntity.status(HttpStatus.CREATED).body(checkerService.createScriptChecker(request))
+    }
+
+    @PatchMapping("/{checkerId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ValidatesInput
+    @ApiResponse(responseCode = "404", description = "Script checker/Language/Language with version not found")
+    fun updateScriptChecker(
+        @PathVariable checkerId: Int,
+        @Valid @RequestBody request: UpdateScriptCheckerRequest
+    ): ResponseEntity<ScriptCheckerDto> {
+        return ResponseEntity.ok(checkerService.updateScriptChecker(checkerId, request))
+    }
+
+    @DeleteMapping("/{checkerId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteScriptChecker(@PathVariable checkerId: Int): ResponseEntity<Void> {
+        checkerService.deleteScriptChecker(checkerId)
+        return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/{checkerId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "404", description = "Script checker not found")
+    fun getScriptChecker(@PathVariable checkerId: Int): ResponseEntity<ScriptCheckerDto> {
+        return ResponseEntity.ok(checkerService.getScriptCheckerDto(checkerId))
     }
 }
