@@ -64,3 +64,14 @@ Authorization: Bearer {{auth.token}}
       }
     ]
 }
+
+### Creating ScriptChecker
+POST {{server}}/api/v1/script-checkers
+Content-Type: application/json
+Authorization: Bearer {{auth.token}}
+
+{
+  "name": "Test",
+  "language": "python",
+  "code": "random code"
+}

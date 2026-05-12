@@ -4,6 +4,7 @@ import com.example.coderun.config.ValidatesInput
 import com.example.coderun.domain.tests.dto.UpdateTestListRequest
 import com.example.coderun.domain.tests.service.TestService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/problems/{problemId}/tests")
+@Tag(name = "Problems")
 class TestsController(
     private val testService: TestService,
 ) {

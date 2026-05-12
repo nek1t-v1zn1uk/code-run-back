@@ -1,6 +1,7 @@
 package com.example.coderun.domain.tests.entity
 
 import com.example.coderun.domain.solutions.entity.AvailableLanguage
+import com.example.coderun.domain.tests.dto.ScriptCheckerDto
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -31,4 +32,12 @@ data class ScriptChecker(
 
     @Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now()
-)
+) {
+    fun toDto() = ScriptCheckerDto(
+        this.id!!,
+        this.name,
+        this.language,
+        this.code,
+        this.createdAt
+    )
+}
