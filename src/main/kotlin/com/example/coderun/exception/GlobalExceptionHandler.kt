@@ -4,6 +4,7 @@ import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -44,6 +45,16 @@ class GlobalExceptionHandler {
             message = ex.message
         )
         return ResponseEntity(error, HttpStatus.UNAUTHORIZED)
+    }
+
+    // Handle Denied Authorization (unauthorized role)
+    @ExceptionHandler(AuthorizationDeniedException::class)
+    fun handleAuthorizationDenied(ex: AuthorizationDeniedException): ResponseEntity<ApiErrorResponse> {
+        val error = ApiErrorResponse(
+            status = HttpStatus.FORBIDDEN.value(),
+            message = ex.message
+        )
+        return ResponseEntity(error, HttpStatus.FORBIDDEN)
     }
 
     // Handle Request Validation Errors (@Valid)

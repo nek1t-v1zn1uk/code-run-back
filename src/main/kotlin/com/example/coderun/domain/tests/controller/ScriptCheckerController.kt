@@ -1,5 +1,6 @@
 package com.example.coderun.domain.tests.controller
 
+import com.example.coderun.config.AdminOnly
 import com.example.coderun.config.ValidatesInput
 import com.example.coderun.domain.tests.dto.CreateScriptCheckerRequest
 import com.example.coderun.domain.tests.dto.ScriptCheckerDto
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -20,6 +22,7 @@ class ScriptCheckerController(
 ) {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @AdminOnly
     @ValidatesInput
     @ApiResponse(responseCode = "400", description = "Version of language must be specified")
     @ApiResponse(responseCode = "404", description = "Language/Language with version not found")
@@ -31,6 +34,7 @@ class ScriptCheckerController(
 
     @PatchMapping("/{checkerId}")
     @ResponseStatus(HttpStatus.OK)
+    @AdminOnly
     @ValidatesInput
     @ApiResponse(responseCode = "404", description = "Script checker/Language/Language with version not found")
     fun updateScriptChecker(
@@ -42,6 +46,7 @@ class ScriptCheckerController(
 
     @DeleteMapping("/{checkerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @AdminOnly
     fun deleteScriptChecker(@PathVariable checkerId: Int): ResponseEntity<Void> {
         checkerService.deleteScriptChecker(checkerId)
         return ResponseEntity.noContent().build()
@@ -49,6 +54,7 @@ class ScriptCheckerController(
 
     @GetMapping("/{checkerId}")
     @ResponseStatus(HttpStatus.OK)
+    @AdminOnly
     @ApiResponse(responseCode = "404", description = "Script checker not found")
     fun getScriptChecker(@PathVariable checkerId: Int): ResponseEntity<ScriptCheckerDto> {
         return ResponseEntity.ok(checkerService.getScriptCheckerDto(checkerId))

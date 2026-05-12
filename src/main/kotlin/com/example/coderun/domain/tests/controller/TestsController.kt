@@ -1,5 +1,6 @@
 package com.example.coderun.domain.tests.controller
 
+import com.example.coderun.config.AdminOnly
 import com.example.coderun.config.ValidatesInput
 import com.example.coderun.domain.tests.dto.UpdateTestListRequest
 import com.example.coderun.domain.tests.service.TestService
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -23,6 +25,7 @@ class TestsController(
 ) {
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @AdminOnly
     @ValidatesInput
     @ApiResponse(responseCode = "404", description = "Problem not found")
     fun updateTestList(
