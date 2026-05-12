@@ -52,4 +52,17 @@ class SolutionService(
 
         return newSolution.toDto()
     }
+
+    fun getSolutionDto(solutionId: Int): SolutionDto {
+        val authentication = SecurityContextHolder.getContext().authentication!!
+        val user = authentication.principal as User
+
+        val solution = solutionRepository.findById(solutionId).getOrNull()
+            ?: throw EntityNotFoundException("Solution with id '$solutionId' not found")
+
+        if (solution.user.id != user.id)
+            throw EntityNotFoundException("Solution with id '$solutionId' not found")
+
+        return solution.toDto()
+    }
 }

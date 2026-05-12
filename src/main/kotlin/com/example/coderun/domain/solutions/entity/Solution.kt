@@ -55,6 +55,7 @@ data class Solution(
         userId = this.user.id!!,
         code = this.code!!,
         language = this.language,
+        status = this.status,
         testCaseReached = this.testCaseReached,
         executionTimeMs = this.executionTimeMs,
         executionMemoryKb = this.executionMemoryKb,
