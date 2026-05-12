@@ -1,5 +1,5 @@
 ### Send Success Solution
-POST {{server}}/api/v1/problems/8/solutions
+POST {{server}}/api/v1/problems/1/solutions
 Content-Type: application/json
 Authorization: Bearer {{auth.token}}
 
@@ -9,7 +9,7 @@ Authorization: Bearer {{auth.token}}
 }
 
 ### Send Test Failed Solution
-POST {{server}}/api/v1/problems/8/solutions
+POST {{server}}/api/v1/problems/1/solutions
 Content-Type: application/json
 Authorization: Bearer {{auth.token}}
 
@@ -19,7 +19,7 @@ Authorization: Bearer {{auth.token}}
 }
 
 ### Send Time Exceed Solution
-POST {{server}}/api/v1/problems/8/solutions
+POST {{server}}/api/v1/problems/1/solutions
 Content-Type: application/json
 Authorization: Bearer {{auth.token}}
 
@@ -29,7 +29,7 @@ Authorization: Bearer {{auth.token}}
 }
 
 ### Send Memory Exceed Solution
-POST {{server}}/api/v1/problems/8/solutions
+POST {{server}}/api/v1/problems/1/solutions
 Content-Type: application/json
 Authorization: Bearer {{auth.token}}
 
@@ -39,7 +39,7 @@ Authorization: Bearer {{auth.token}}
 }
 
 ### Send Output Exceed Solution
-POST {{server}}/api/v1/problems/8/solutions
+POST {{server}}/api/v1/problems/1/solutions
 Content-Type: application/json
 Authorization: Bearer {{auth.token}}
 
