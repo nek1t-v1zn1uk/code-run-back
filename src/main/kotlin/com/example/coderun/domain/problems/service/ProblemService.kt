@@ -11,6 +11,7 @@ import com.example.coderun.domain.problems.entity.ProblemDifficulty
 import com.example.coderun.domain.problems.entity.ProblemTopic
 import com.example.coderun.domain.problems.repository.ProblemRepository
 import com.example.coderun.domain.problems.repository.ProblemTopicRepository
+import com.example.coderun.domain.tests.repository.ScriptCheckerRepository
 import com.example.coderun.util.CursorUtil
 import jakarta.persistence.EntityNotFoundException
 import jakarta.persistence.criteria.Predicate
@@ -24,12 +25,18 @@ import kotlin.jvm.optionals.getOrNull
 class ProblemService (
     private val problemRepository: ProblemRepository,
     private val problemTopicRepository: ProblemTopicRepository,
+    private val checkerRepository: ScriptCheckerRepository,
 ) {
     fun createProblem(request: CreateProblemRequest): ProblemDto {
         val topic =
             if(request.topic == null) null
             else problemTopicRepository.findByName(request.topic)
                 ?: throw EntityNotFoundException("Problem topic with name \"${request.topic}\" not found")
+
+        val scriptChecker =
+            if(request.defaultScriptCheckerId == null) null
+            else checkerRepository.findById(request.defaultScriptCheckerId).getOrNull()
+                ?: throw EntityNotFoundException("Script checker with id \"${request.defaultScriptCheckerId}\" not found")
 
         val createdProblem = problemRepository.save(Problem(
             title = request.title,
@@ -38,18 +45,24 @@ class ProblemService (
             statement = request.statement,
             executionTimeLimitMs = request.executionTimeLimitMs,
             executionMemoryLimitKb = request.executionMemoryLimitKb,
-            defaultEvaluationType = request.defaultEvaluationType!!
+            defaultEvaluationType = request.defaultEvaluationType!!,
+            defaultScriptChecker = scriptChecker
         ))
         return createdProblem.toProblemDto()
     }
     fun updateProblem(problemId: Int, request: UpdateProblemRequest): ProblemDto {
+        val problem = problemRepository.findById(problemId).getOrNull()
+            ?: throw EntityNotFoundException("Problem with id $problemId not found")
+
         val topic =
             if(request.topic == null) null
             else problemTopicRepository.findByName(request.topic)
                 ?: throw EntityNotFoundException("Problem topic with name \"${request.topic}\" not found")
 
-        val problem = problemRepository.findById(problemId).getOrNull()
-            ?: throw EntityNotFoundException("Problem with id $problemId not found")
+        val scriptChecker =
+            if(request.defaultScriptCheckerId == null) null
+            else checkerRepository.findById(request.defaultScriptCheckerId).getOrNull()
+                ?: throw EntityNotFoundException("Script checker with id \"${request.defaultScriptCheckerId}\" not found")
 
         request.title?.let { problem.title = it }
         topic?.let { problem.topic = it }
@@ -58,6 +71,7 @@ class ProblemService (
         request.executionTimeLimitMs?.let { problem.executionTimeLimitMs = it }
         request.executionMemoryLimitKb?.let { problem.executionMemoryLimitKb = it }
         request.defaultEvaluationType?.let { problem.defaultEvaluationType = it }
+        scriptChecker?.let{ problem.defaultScriptChecker = it }
 
         val updatedProblem = problemRepository.save(problem)
 

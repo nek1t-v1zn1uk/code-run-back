@@ -53,7 +53,9 @@ data class CreateProblemRequest(
 
     @field:NotNull
     @field:Schema(implementation = EvaluationType::class)
-    val defaultEvaluationType: EvaluationType?
+    val defaultEvaluationType: EvaluationType?,
+
+    val defaultScriptCheckerId: Int? = null
 )
 data class UpdateProblemRequest(
     @field:Size(min = 3, max = 255)
@@ -77,7 +79,9 @@ data class UpdateProblemRequest(
     val executionMemoryLimitKb: Int? = null,
 
     @field:Schema(implementation = EvaluationType::class)
-    val defaultEvaluationType: EvaluationType? = null
+    val defaultEvaluationType: EvaluationType? = null,
+
+    val defaultScriptCheckerId: Int? = null
 )
 data class GetProblemsRequest(
     val difficulty: ProblemDifficulty?,
