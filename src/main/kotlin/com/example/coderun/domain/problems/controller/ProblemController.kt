@@ -37,7 +37,7 @@ class ProblemController (
     @ResponseStatus(HttpStatus.CREATED)
     @AdminOnly
     @ValidatesInput
-    @ApiResponse(responseCode = "404", description = "Problem topic not found")
+    @ApiResponse(responseCode = "404", description = "Problem topic/Script Checker not found")
     fun createProblem(@Valid @RequestBody request: CreateProblemRequest): ResponseEntity<ProblemDto> {
         return ResponseEntity.status(HttpStatus.CREATED).body(problemService.createProblem(request))
     }
@@ -45,7 +45,7 @@ class ProblemController (
     @ResponseStatus(HttpStatus.OK)
     @AdminOnly
     @ValidatesInput
-    @ApiResponse(responseCode = "404", description = "Problem not found")
+    @ApiResponse(responseCode = "404", description = "Problem/Script Checker not found")
     fun updateProblem(@PathVariable problemId: Int, @Valid @RequestBody request: UpdateProblemRequest): ResponseEntity<ProblemDto> {
         return ResponseEntity.ok(problemService.updateProblem(problemId, request))
     }

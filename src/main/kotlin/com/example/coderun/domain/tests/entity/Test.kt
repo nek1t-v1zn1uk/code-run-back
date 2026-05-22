@@ -2,6 +2,7 @@ package com.example.coderun.domain.tests.entity
 
 import com.example.coderun.domain.problems.entity.EvaluationType
 import com.example.coderun.domain.problems.entity.Problem
+import com.example.coderun.domain.tests.dto.TestDto
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -49,4 +50,16 @@ data class Test(
 
     @Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now()
-)
+) {
+    fun toDto() = TestDto(
+        this.id!!,
+        this.problem!!.id!!,
+        this.ordinal,
+        this.isExample,
+        this.inputData,
+        this.expectedOutput,
+        this.overrideEvaluationType,
+        this.overrideScriptChecker?.let { it.id!! },
+        this.createdAt,
+    )
+}

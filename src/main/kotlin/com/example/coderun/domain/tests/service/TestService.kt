@@ -1,11 +1,13 @@
 package com.example.coderun.domain.tests.service
 
 import com.example.coderun.domain.problems.repository.ProblemRepository
+import com.example.coderun.domain.tests.dto.TestDto
 import com.example.coderun.domain.tests.dto.UpdateTestListRequest
 import com.example.coderun.domain.tests.entity.Test
 import com.example.coderun.domain.tests.repository.TestRepository
 import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrNull
 
@@ -48,5 +50,20 @@ class TestService(
             )
         }
         testRepository.saveAll(newTests)
+    }
+
+    fun getTestDto(testId: Int): TestDto {
+        val test = testRepository.findById(testId).getOrNull()
+            ?: throw EntityNotFoundException("Test with id '$testId' not found")
+        println("1")
+        println(test.toDto())
+        return test.toDto()
+    }
+
+    fun getProblemTestsDto(problemId: Int): List<TestDto> {
+        val problem = problemRepository.findById(problemId).getOrNull()
+            ?: throw EntityNotFoundException("Problem with id '$problemId' not found")
+
+        return problem.tests.map { it.toDto() }
     }
 }
