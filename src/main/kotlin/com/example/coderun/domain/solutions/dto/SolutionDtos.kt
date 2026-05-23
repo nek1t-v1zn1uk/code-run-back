@@ -12,6 +12,8 @@ data class SolutionDto(
     var userId: Int,
     var code: String,
     var language: AvailableLanguage,
+    var contestId: Int? = null,
+    var contestProblemId: Int? = null,
     var status: SolutionStatus = SolutionStatus.IN_QUEUE,
     var testCaseReached: Int? = null,
     var executionTimeMs: Int? = null,
@@ -31,4 +33,7 @@ data class SendSolutionRequest(
 
     @Size(max = 32)
     val languageVersion: String? = null,
+
+    val contestId: Int? = null,
+    val contestProblemId: Int? = null,
 )

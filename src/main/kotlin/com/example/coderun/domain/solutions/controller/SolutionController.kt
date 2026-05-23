@@ -21,7 +21,7 @@ class SolutionController(
     @ResponseStatus(HttpStatus.CREATED)
     @ValidatesInput
     @ApiResponse(responseCode = "400", description = "Version of language must be specified")
-    @ApiResponse(responseCode = "404", description = "Problem/Language/Language with version not found")
+    @ApiResponse(responseCode = "404", description = "Problem/Language/Language with version/Contest/Contest problem not found")
     fun sendSolution(
         @PathVariable problemId: Int,
         @RequestBody @Valid request: SendSolutionRequest

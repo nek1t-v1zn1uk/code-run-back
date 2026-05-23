@@ -13,12 +13,17 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrNull
 
+import com.example.coderun.domain.contest.repository.ContestRepository
+import com.example.coderun.domain.contest.repository.ContestProblemRepository
+
 @Service
 class SolutionService(
     private val solutionRepository: SolutionRepository,
     private val problemRepository: ProblemRepository,
     private val languageRepository: AvailableLanguageRepository,
     private val evaluationService: SolutionEvaluationService,
+    private val contestRepository: ContestRepository,
+    private val contestProblemRepository: ContestProblemRepository,
 ) {
     @Transactional
     fun createSolution(problemId: Int, request: SendSolutionRequest): SolutionDto {
@@ -39,12 +44,24 @@ class SolutionService(
         val authentication = SecurityContextHolder.getContext().authentication!!
         val user = authentication.principal as User
 
+        val contest = request.contestId?.let { 
+            contestRepository.findById(it).getOrNull()
+                ?: throw EntityNotFoundException("Contest with id '$it' not found")
+        }
+
+        val contestProblem = request.contestProblemId?.let {
+            contestProblemRepository.findById(it).getOrNull()
+                ?: throw EntityNotFoundException("Contest problem with id '$it' not found")
+        }
+
         val newSolution = solutionRepository.save(
             Solution(
                 problem = problem,
                 user = user,
                 code = request.code,
-                language = language
+                language = language,
+                contest = contest,
+                contestProblem = contestProblem
             )
         )
 
