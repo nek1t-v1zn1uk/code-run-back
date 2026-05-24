@@ -82,4 +82,12 @@ class SolutionService(
 
         return solution.toDto()
     }
+
+    fun getSolutionsForProblem(problemId: Int): List<SolutionDto> {
+        val authentication = SecurityContextHolder.getContext().authentication!!
+        val user = authentication.principal as User
+
+        val solutions = solutionRepository.findAllByProblemIdAndUserIdOrderBySentAtDesc(problemId, user.id!!)
+        return solutions.map { it.toDto() }
+    }
 }
