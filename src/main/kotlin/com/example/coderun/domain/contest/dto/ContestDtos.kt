@@ -55,3 +55,22 @@ data class AddContestProblemRequest(
     @field:Max(1000)
     val ordinal: Int
 )
+
+data class UpdateContestRequest(
+    @field:Size(max = 1000)
+    val name: String? = null,
+
+    @field:Size(max = 99999)
+    val overview: String? = null,
+
+    @field:Size(max = 99999)
+    val rules: String? = null,
+
+    val startTime: Instant? = null,
+    val freezeTime: Instant? = null,
+    val endTime: Instant? = null
+)
+
+data class UpdateContestProblemsRequest(
+    val problemIds: List<Int>
+)

@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 interface ContestProblemRepository : JpaRepository<ContestProblem, Int> {
     fun findAllByContestId(contestId: Int): List<ContestProblem>
     fun findByContestIdAndProblemId(contestId: Int, problemId: Int): ContestProblem?
+    fun deleteAllByContestId(contestId: Int)
 }

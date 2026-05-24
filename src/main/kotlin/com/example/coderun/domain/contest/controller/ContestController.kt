@@ -39,6 +39,17 @@ class ContestController(
         return ResponseEntity.status(HttpStatus.CREATED).body(contestService.createContest(request))
     }
 
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @AdminOnly
+    @ValidatesInput
+    fun updateContest(
+        @PathVariable id: Int,
+        @Valid @RequestBody request: UpdateContestRequest
+    ): ResponseEntity<ContestDto> {
+        return ResponseEntity.ok(contestService.updateContest(id, request))
+    }
+
     @GetMapping("/{id}/problems")
     @ResponseStatus(HttpStatus.OK)
     fun getContestProblems(@PathVariable id: Int): ResponseEntity<List<ContestProblemDto>> {
@@ -55,6 +66,17 @@ class ContestController(
         @Valid @RequestBody request: AddContestProblemRequest
     ): ResponseEntity<ContestProblemDto> {
         return ResponseEntity.status(HttpStatus.CREATED).body(contestService.addProblemToContest(id, request))
+    }
+
+    @PutMapping("/{id}/problems")
+    @ResponseStatus(HttpStatus.OK)
+    @AdminOnly
+    @ValidatesInput
+    fun updateContestProblems(
+        @PathVariable id: Int,
+        @Valid @RequestBody request: UpdateContestProblemsRequest
+    ): ResponseEntity<List<ContestProblemDto>> {
+        return ResponseEntity.ok(contestService.updateContestProblems(id, request))
     }
 
     @GetMapping("/{id}/members")

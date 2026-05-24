@@ -43,6 +43,21 @@ class ContestService(
         )
         return contestRepository.save(contest).toDto()
     }
+
+    @Transactional
+    fun updateContest(id: Int, request: UpdateContestRequest): ContestDto {
+        val contest = contestRepository.findById(id).getOrNull()
+            ?: throw EntityNotFoundException("Contest not found")
+
+        request.name?.let { contest.name = it }
+        request.overview?.let { contest.overview = it }
+        request.rules?.let { contest.rules = it }
+        request.startTime?.let { contest.startTime = it }
+        request.freezeTime?.let { contest.freezeTime = it }
+        request.endTime?.let { contest.endTime = it }
+
+        return contestRepository.save(contest).toDto()
+    }
     
     fun getContestProblems(contestId: Int): List<ContestProblemDto> {
         return contestProblemRepository.findAllByContestId(contestId).map { it.toDto() }
@@ -62,6 +77,29 @@ class ContestService(
             ordinal = request.ordinal
         )
         return contestProblemRepository.save(contestProblem).toDto()
+    }
+
+    @Transactional
+    fun updateContestProblems(contestId: Int, request: UpdateContestProblemsRequest): List<ContestProblemDto> {
+        val contest = contestRepository.findById(contestId).getOrNull()
+            ?: throw EntityNotFoundException("Contest not found")
+
+        // Remove all existing problems for this contest
+        contestProblemRepository.deleteAllByContestId(contestId)
+        contestProblemRepository.flush()
+
+        // Insert new order
+        val newProblems = request.problemIds.mapIndexed { index, probId ->
+            val problem = problemRepository.findById(probId).getOrNull()
+                ?: throw EntityNotFoundException("Problem ID $probId not found")
+            ContestProblem(
+                contest = contest,
+                problem = problem,
+                ordinal = index + 1 // 1-indexed
+            )
+        }
+        
+        return contestProblemRepository.saveAll(newProblems).map { it.toDto() }
     }
 
     fun getContestMembers(contestId: Int): List<ContestMemberDto> {
