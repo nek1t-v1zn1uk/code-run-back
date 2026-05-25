@@ -87,6 +87,7 @@ class ContestController(
 
     @GetMapping("/{id}/has-joined")
     @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "409", description = "User has already joined this contest")
     fun hasJoinedContest(@PathVariable id: Int): ResponseEntity<Map<String, Boolean>> {
         return ResponseEntity.ok(mapOf("hasJoined" to contestService.hasJoinedContest(id)))
     }
@@ -99,5 +100,14 @@ class ContestController(
         val authentication = SecurityContextHolder.getContext().authentication!!
         val user = authentication.principal as User
         return ResponseEntity.ok(contestService.joinContest(id, user.id!!))
+    }
+
+    @GetMapping("/{id}/progress")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "404", description = "Contest not found")
+    fun getContestProgress(@PathVariable id: Int): ResponseEntity<ContestProgressDto> {
+        val authentication = SecurityContextHolder.getContext().authentication!!
+        val user = authentication.principal as User
+        return ResponseEntity.ok(contestService.getUserProgress(id, user.id!!))
     }
 }

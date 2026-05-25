@@ -29,6 +29,21 @@ data class ContestMemberDto(
     val resultPlace: Int?
 )
 
+data class ContestProgressDto(
+    val solvedCount: Int,
+    val totalUnsuccessful: Int,
+    val totalScore: Int,
+    val problemStats: Map<Int, ProblemStatDto>
+)
+
+data class ProblemStatDto(
+    val problemId: Int,
+    val isSolved: Boolean,
+    val unsuccessfulCount: Int,
+    val score: Int
+)
+
+
 data class CreateContestRequest(
     @field:Size(max = 1000)
     val name: String?,

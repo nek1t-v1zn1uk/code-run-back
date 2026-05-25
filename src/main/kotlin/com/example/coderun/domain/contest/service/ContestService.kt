@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
+import com.example.coderun.domain.solutions.repository.SolutionRepository
+import com.example.coderun.domain.solutions.entity.SolutionStatus
+import java.time.Duration
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -18,7 +21,8 @@ class ContestService(
     private val contestProblemRepository: ContestProblemRepository,
     private val contestMemberRepository: ContestMemberRepository,
     private val problemRepository: ProblemRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val solutionRepository: SolutionRepository
 ) {
     fun getAllContests(): List<ContestDto> {
         return contestRepository.findAll().map { it.toDto() }
@@ -112,10 +116,15 @@ class ContestService(
         return contestMemberRepository.existsByContestIdAndUserId(contestId, user.id!!)
     }
 
+    fun hasJoinedContest(contestId: Int, userId: Int): Boolean {
+        return contestMemberRepository.existsByContestIdAndUserId(contestId, userId)
+    }
+
     @Transactional
     fun joinContest(contestId: Int, userId: Int): ContestMemberDto {
-        if (contestMemberRepository.existsByContestIdAndUserId(contestId, userId))
-            throw IllegalArgumentException("Already joined")
+        if (hasJoinedContest(contestId, userId)) {
+            throw IllegalArgumentException("User has already joined this contest")
+        }
 
         val contest = contestRepository.findById(contestId).getOrNull()
             ?: throw EntityNotFoundException("Contest not found")
@@ -128,5 +137,58 @@ class ContestService(
             user = user
         )
         return contestMemberRepository.save(member).toDto()
+    }
+
+    fun getUserProgress(contestId: Int, userId: Int): ContestProgressDto {
+        val contest = contestRepository.findById(contestId).getOrNull()
+            ?: throw EntityNotFoundException("Contest not found")
+            
+        val solutions = solutionRepository.findAllByContestIdAndUserIdOrderBySentAtAsc(contestId, userId)
+        val solutionsByProblem = solutions.groupBy { it.problem.id!! }
+        
+        var totalSolved = 0
+        var totalUnsuccessful = 0
+        var totalScore = 0
+        val problemStats = mutableMapOf<Int, ProblemStatDto>()
+        
+        for ((problemId, problemSolutions) in solutionsByProblem) {
+            var isSolved = false
+            var unsuccessfulCount = 0
+            var score = 0
+            
+            for (solution in problemSolutions) {
+                if (solution.status == SolutionStatus.SUCCESS) {
+                    isSolved = true
+                    val minutesFromStart = Duration.between(contest.startTime, solution.sentAt).toMinutes().toInt()
+                    val timePenalty = maxOf(0, minutesFromStart)
+                    score = timePenalty + (unsuccessfulCount * 20)
+                    break
+                } else if (solution.status != SolutionStatus.IN_QUEUE && 
+                           solution.status != SolutionStatus.COMPILING && 
+                           solution.status != SolutionStatus.EXECUTION) {
+                    unsuccessfulCount++
+                }
+            }
+            
+            if (isSolved) {
+                totalSolved++
+                totalUnsuccessful += unsuccessfulCount
+                totalScore += score
+            }
+            
+            problemStats[problemId] = ProblemStatDto(
+                problemId = problemId,
+                isSolved = isSolved,
+                unsuccessfulCount = unsuccessfulCount,
+                score = score
+            )
+        }
+        
+        return ContestProgressDto(
+            solvedCount = totalSolved,
+            totalUnsuccessful = totalUnsuccessful,
+            totalScore = totalScore,
+            problemStats = problemStats
+        )
     }
 }
