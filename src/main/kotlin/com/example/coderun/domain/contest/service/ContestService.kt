@@ -191,4 +191,83 @@ class ContestService(
             problemStats = problemStats
         )
     }
+
+    fun getScoreboard(contestId: Int): ScoreboardDto {
+        val contest = contestRepository.findById(contestId).getOrNull()
+            ?: throw EntityNotFoundException("Contest not found")
+            
+        val members = contestMemberRepository.findAllByContestId(contestId)
+        val solutions = solutionRepository.findAllByContestIdOrderBySentAtAsc(contestId)
+        
+        val solutionsByUser = solutions.groupBy { it.user.id!! }
+        
+        val rows = members.map { member ->
+            val userSolutions = solutionsByUser[member.user.id!!] ?: emptyList()
+            val solutionsByProblem = userSolutions.groupBy { it.problem.id!! }
+            
+            var totalSolved = 0
+            var totalScore = 0
+            val problemStats = mutableMapOf<Int, ScoreboardProblemStatDto>()
+            
+            for ((problemId, problemSolutions) in solutionsByProblem) {
+                var isSolved = false
+                var unsuccessfulCount = 0
+                var frozenAttempts = 0
+                var score = 0
+                
+                for (solution in problemSolutions) {
+                    val isFrozen = contest.freezeTime != null && solution.sentAt >= contest.freezeTime
+                    
+                    if (isFrozen) {
+                        if (!isSolved) {
+                            frozenAttempts++
+                        }
+                    } else {
+                        if (solution.status == SolutionStatus.SUCCESS) {
+                            isSolved = true
+                            val minutesFromStart = Duration.between(contest.startTime, solution.sentAt).toMinutes().toInt()
+                            val timePenalty = maxOf(0, minutesFromStart)
+                            score = timePenalty + (unsuccessfulCount * 20)
+                            break
+                        } else if (solution.status != SolutionStatus.IN_QUEUE && 
+                                   solution.status != SolutionStatus.COMPILING && 
+                                   solution.status != SolutionStatus.EXECUTION) {
+                            unsuccessfulCount++
+                        }
+                    }
+                }
+                
+                if (isSolved) {
+                    totalSolved++
+                    totalScore += score
+                }
+                
+                problemStats[problemId] = ScoreboardProblemStatDto(
+                    problemId = problemId,
+                    isSolved = isSolved,
+                    unsuccessfulCount = unsuccessfulCount,
+                    frozenAttempts = frozenAttempts,
+                    score = score
+                )
+            }
+            
+            ScoreboardRowDto(
+                userId = member.user.id!!,
+                username = if (member.user.lastName != null) "${member.user.firstName} ${member.user.lastName}" else member.user.firstName,
+                solvedCount = totalSolved,
+                totalScore = totalScore,
+                problemStats = problemStats
+            )
+        }
+        
+        val sortedRows = rows.sortedWith(
+            compareByDescending<ScoreboardRowDto> { it.solvedCount }
+                .thenBy { it.totalScore }
+        )
+        
+        return ScoreboardDto(
+            contestId = contestId,
+            rows = sortedRows
+        )
+    }
 }

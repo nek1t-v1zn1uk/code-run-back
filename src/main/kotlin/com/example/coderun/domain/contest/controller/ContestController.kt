@@ -110,4 +110,11 @@ class ContestController(
         val user = authentication.principal as User
         return ResponseEntity.ok(contestService.getUserProgress(id, user.id!!))
     }
+
+    @GetMapping("/{id}/scoreboard")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "404", description = "Contest not found")
+    fun getScoreboard(@PathVariable id: Int): ResponseEntity<ScoreboardDto> {
+        return ResponseEntity.ok(contestService.getScoreboard(id))
+    }
 }

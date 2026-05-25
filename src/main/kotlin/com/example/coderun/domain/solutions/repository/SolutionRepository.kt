@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 interface SolutionRepository : JpaRepository<Solution, Int> {
     fun findAllByProblemIdAndUserIdOrderBySentAtDesc(problemId: Int, userId: Int): List<Solution>
     fun findAllByContestIdAndUserIdOrderBySentAtAsc(contestId: Int, userId: Int): List<Solution>
+    fun findAllByContestIdOrderBySentAtAsc(contestId: Int): List<Solution>
 }

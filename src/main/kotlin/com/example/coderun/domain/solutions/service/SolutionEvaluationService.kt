@@ -6,6 +6,8 @@ import com.example.coderun.domain.solutions.entity.Solution
 import com.example.coderun.domain.solutions.entity.SolutionStatus
 import com.example.coderun.domain.solutions.repository.SolutionRepository
 import com.example.coderun.domain.tests.repository.ScriptCheckerRepository
+import com.example.coderun.domain.contest.event.SolutionEvaluatedEvent
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.LinkedList
@@ -16,6 +18,7 @@ import kotlin.math.roundToInt
 class SolutionEvaluationService(
     private val isolateService: IsolateService,
     private val solutionRepository: SolutionRepository,
+    private val eventPublisher: ApplicationEventPublisher,
 
     private val queue: Queue<Solution> = LinkedList(),
 ) {
@@ -93,6 +96,10 @@ class SolutionEvaluationService(
         solution.executedAt = Instant.now()
 
         solutionRepository.save(solution)
+        
+        if (solution.contest != null) {
+            eventPublisher.publishEvent(SolutionEvaluatedEvent(this, solution.contest!!.id!!))
+        }
 
         evaluateNextSolution()
     }

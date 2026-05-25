@@ -43,6 +43,27 @@ data class ProblemStatDto(
     val score: Int
 )
 
+data class ScoreboardDto(
+    val contestId: Int,
+    val rows: List<ScoreboardRowDto>
+)
+
+data class ScoreboardRowDto(
+    val userId: Int,
+    val username: String, // Actually firstName + lastName
+    val solvedCount: Int,
+    val totalScore: Int,
+    val problemStats: Map<Int, ScoreboardProblemStatDto>
+)
+
+data class ScoreboardProblemStatDto(
+    val problemId: Int,
+    val isSolved: Boolean,
+    val unsuccessfulCount: Int,
+    val frozenAttempts: Int,
+    val score: Int
+)
+
 
 data class CreateContestRequest(
     @field:Size(max = 1000)
