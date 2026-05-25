@@ -106,6 +106,12 @@ class ContestService(
         return contestMemberRepository.findAllByContestId(contestId).map { it.toDto() }
     }
 
+    fun hasJoinedContest(contestId: Int): Boolean {
+        val authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().authentication!!
+        val user = authentication.principal as com.example.coderun.domain.users.User
+        return contestMemberRepository.existsByContestIdAndUserId(contestId, user.id!!)
+    }
+
     @Transactional
     fun joinContest(contestId: Int, userId: Int): ContestMemberDto {
         if (contestMemberRepository.existsByContestIdAndUserId(contestId, userId))

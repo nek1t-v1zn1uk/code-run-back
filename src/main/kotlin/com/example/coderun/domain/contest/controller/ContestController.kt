@@ -85,6 +85,12 @@ class ContestController(
         return ResponseEntity.ok(contestService.getContestMembers(id))
     }
 
+    @GetMapping("/{id}/has-joined")
+    @ResponseStatus(HttpStatus.OK)
+    fun hasJoinedContest(@PathVariable id: Int): ResponseEntity<Map<String, Boolean>> {
+        return ResponseEntity.ok(mapOf("hasJoined" to contestService.hasJoinedContest(id)))
+    }
+
     @PostMapping("/{id}/join")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(responseCode = "400", description = "User already joined")
