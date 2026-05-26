@@ -63,6 +63,9 @@ data class Problem(
         defaultEvaluationType,
         defaultScriptChecker?.id,
         createdAt,
-        isPublic
+        isPublic,
+        examples = tests.filter { it.isExample }.sortedBy { it.ordinal }.map {
+            com.example.coderun.domain.problems.dto.ExampleTestDto(it.inputData, it.expectedOutput)
+        }
     )
 }

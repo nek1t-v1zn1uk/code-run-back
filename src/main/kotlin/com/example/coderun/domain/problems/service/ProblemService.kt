@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -27,6 +28,7 @@ class ProblemService (
     private val problemTopicRepository: ProblemTopicRepository,
     private val checkerRepository: ScriptCheckerRepository,
 ) {
+    @Transactional
     fun createProblem(request: CreateProblemRequest): ProblemDto {
         val topic =
             if(request.topic == null) null
@@ -51,6 +53,8 @@ class ProblemService (
         ))
         return createdProblem.toProblemDto()
     }
+
+    @Transactional
     fun updateProblem(problemId: Int, request: UpdateProblemRequest): ProblemDto {
         val problem = problemRepository.findById(problemId).getOrNull()
             ?: throw EntityNotFoundException("Problem with id $problemId not found")
@@ -79,19 +83,25 @@ class ProblemService (
 
         return updatedProblem.toProblemDto()
     }
+    @Transactional
     fun deleteProblem(problemId: Int) {
         problemRepository.deleteById(problemId)
     }
 
+    @Transactional(readOnly = true)
     fun getProblemTopics(): List<ProblemTopic> {
         val problemTopics = problemTopicRepository.findAll()
         return problemTopics
     }
+
+    @Transactional(readOnly = true)
     fun getProblemDto(id: Int): ProblemDto {
         val problem = problemRepository.findById(id).getOrNull()
             ?: throw EntityNotFoundException("Problem with id: $id not found")
         return problem.toProblemDto()
     }
+
+    @Transactional(readOnly = true)
     fun getProblemsWrapped(request: GetProblemsRequest, includePrivate: Boolean = false): ProblemPageResponse {
         // build specification for query
         val spec = Specification<Problem> { root, query, cb ->

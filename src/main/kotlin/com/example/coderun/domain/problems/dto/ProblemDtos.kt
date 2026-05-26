@@ -12,6 +12,11 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.time.Instant
 
+data class ExampleTestDto(
+    val inputData: String,
+    val expectedOutput: String?
+)
+
 data class ProblemDto(
     var id: Int,
     var title: String,
@@ -23,7 +28,8 @@ data class ProblemDto(
     var defaultEvaluationType: EvaluationType? = null,
     var defaultScriptCheckerId: Int? = null,
     var createdAt: Instant,
-    var isPublic: Boolean = true
+    var isPublic: Boolean = true,
+    var examples: List<ExampleTestDto>? = null
 )
 
 data class CreateProblemRequest(
