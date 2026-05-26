@@ -46,6 +46,9 @@ data class Problem(
     @Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now(),
 
+    @Column(name = "is_public", nullable = false)
+    var isPublic: Boolean = true,
+
     @OneToMany(mappedBy = "problem", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
     val tests: MutableList<Test> = mutableListOf()
 ) {
@@ -59,6 +62,7 @@ data class Problem(
         executionMemoryLimitKb,
         defaultEvaluationType,
         defaultScriptChecker?.id,
-        createdAt
+        createdAt,
+        isPublic
     )
 }

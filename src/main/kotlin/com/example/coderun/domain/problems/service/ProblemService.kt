@@ -46,7 +46,8 @@ class ProblemService (
             executionTimeLimitMs = request.executionTimeLimitMs,
             executionMemoryLimitKb = request.executionMemoryLimitKb,
             defaultEvaluationType = request.defaultEvaluationType!!,
-            defaultScriptChecker = scriptChecker
+            defaultScriptChecker = scriptChecker,
+            isPublic = request.isPublic
         ))
         return createdProblem.toProblemDto()
     }
@@ -72,6 +73,7 @@ class ProblemService (
         request.executionMemoryLimitKb?.let { problem.executionMemoryLimitKb = it }
         request.defaultEvaluationType?.let { problem.defaultEvaluationType = it }
         scriptChecker?.let{ problem.defaultScriptChecker = it }
+        request.isPublic?.let { problem.isPublic = it }
 
         val updatedProblem = problemRepository.save(problem)
 
@@ -90,10 +92,15 @@ class ProblemService (
             ?: throw EntityNotFoundException("Problem with id: $id not found")
         return problem.toProblemDto()
     }
-    fun getProblemsWrapped(request: GetProblemsRequest): ProblemPageResponse {
+    fun getProblemsWrapped(request: GetProblemsRequest, includePrivate: Boolean = false): ProblemPageResponse {
         // build specification for query
         val spec = Specification<Problem> { root, query, cb ->
             val predicates = mutableListOf<Predicate>()
+            
+            // Only fetch public problems if includePrivate is false
+            if (!includePrivate) {
+                predicates.add(cb.equal(root.get<Boolean>("isPublic"), true))
+            }
 
             // static filters
             request.topicName?.let {
