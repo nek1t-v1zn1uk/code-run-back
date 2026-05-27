@@ -16,6 +16,8 @@ import kotlin.jvm.optionals.getOrNull
 
 import com.example.coderun.domain.contest.repository.ContestRepository
 import com.example.coderun.domain.contest.repository.ContestProblemRepository
+import org.springframework.transaction.support.TransactionSynchronization
+import org.springframework.transaction.support.TransactionSynchronizationManager
 
 @Service
 class SolutionService(
@@ -26,6 +28,7 @@ class SolutionService(
     private val contestRepository: ContestRepository,
     private val contestProblemRepository: ContestProblemRepository,
     private val commentRepository: CommentRepository,
+    private val broadcastService: SolutionBroadcastService,
 ) {
     @Transactional
     fun createSolution(problemId: Int, request: SendSolutionRequest): SolutionDto {
@@ -67,7 +70,13 @@ class SolutionService(
             )
         )
 
-        evaluationService.enqueueSolution(newSolution)
+        broadcastService.broadcastSolutionUpdate(newSolution)
+        
+        TransactionSynchronizationManager.registerSynchronization(object : TransactionSynchronization {
+            override fun afterCommit() {
+                evaluationService.enqueueSolution(newSolution.id!!)
+            }
+        })
 
         return newSolution.toDto()
     }
