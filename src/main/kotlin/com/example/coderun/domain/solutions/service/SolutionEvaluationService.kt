@@ -176,8 +176,10 @@ class SolutionEvaluationService(
         
             java.nio.file.Files.deleteIfExists(binaryPath)
             
-            if(index == tests!!.size)
+            if(index == tests!!.size) {
                 solution!!.status = SolutionStatus.SUCCESS
+                solution!!.testCaseReached = null
+            }
             solution!!.executedAt = Instant.now()
 
             solutionRepository.save(solution!!)
