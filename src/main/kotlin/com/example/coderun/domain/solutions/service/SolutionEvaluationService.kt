@@ -62,7 +62,7 @@ class SolutionEvaluationService(
                         10F,
                         1024*1024
                     )
-                    if(checkerResult.status != "OK" || checkerResult.stdout == "False") {
+                    if(checkerResult.status != "OK" || checkerResult.stdout.trim() == "False") {
                         solution.status = SolutionStatus.TEST_FAILED
                         solution.testCaseReached = index
                         break
