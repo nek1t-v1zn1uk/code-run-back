@@ -1,5 +1,6 @@
 package com.example.coderun.domain.solutions.service
 
+import com.example.coderun.domain.comments.repository.CommentRepository
 import com.example.coderun.domain.problems.repository.ProblemRepository
 import com.example.coderun.domain.solutions.dto.SendSolutionRequest
 import com.example.coderun.domain.solutions.dto.SolutionDto
@@ -24,6 +25,7 @@ class SolutionService(
     private val evaluationService: SolutionEvaluationService,
     private val contestRepository: ContestRepository,
     private val contestProblemRepository: ContestProblemRepository,
+    private val commentRepository: CommentRepository,
 ) {
     @Transactional
     fun createSolution(problemId: Int, request: SendSolutionRequest): SolutionDto {
@@ -77,7 +79,7 @@ class SolutionService(
         val solution = solutionRepository.findById(solutionId).getOrNull()
             ?: throw EntityNotFoundException("Solution with id '$solutionId' not found")
 
-        if (solution.user.id != user.id)
+        if (solution.user.id != user.id && !commentRepository.existsByPinnedSolutionId(solutionId))
             throw EntityNotFoundException("Solution with id '$solutionId' not found")
 
         return solution.toDto()

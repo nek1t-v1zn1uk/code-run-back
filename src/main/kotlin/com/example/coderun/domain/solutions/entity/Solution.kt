@@ -63,6 +63,8 @@ data class Solution(
         id = this.id!!,
         problemId = this.problem.id!!,
         userId = this.user.id!!,
+        userFirstName = this.user.firstName,
+        userLastName = this.user.lastName,
         code = this.code!!,
         language = this.language,
         contestId = this.contest?.id,

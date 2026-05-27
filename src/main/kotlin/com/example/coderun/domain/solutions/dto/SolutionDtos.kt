@@ -10,6 +10,8 @@ data class SolutionDto(
     var id: Int,
     var problemId: Int,
     var userId: Int,
+    var userFirstName: String? = null,
+    var userLastName: String? = null,
     var code: String,
     var language: AvailableLanguage,
     var contestId: Int? = null,

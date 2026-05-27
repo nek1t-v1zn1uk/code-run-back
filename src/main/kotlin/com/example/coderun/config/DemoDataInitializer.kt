@@ -52,7 +52,7 @@ class DemoDataInitializer(
 
         // 1. Truncate tables (cascade to avoid foreign key violations, restart identity to reset IDs to 1)
         entityManager.createNativeQuery(
-            "TRUNCATE TABLE solutions, contest_members, contest_problems, contests, tests, problems, script_checkers, users, problem_topics RESTART IDENTITY CASCADE"
+            "TRUNCATE TABLE comments, solutions, contest_members, contest_problems, contests, tests, problems, script_checkers, users, problem_topics RESTART IDENTITY CASCADE"
         ).executeUpdate()
         println("Database truncated successfully (excluding available_languages).")
 
