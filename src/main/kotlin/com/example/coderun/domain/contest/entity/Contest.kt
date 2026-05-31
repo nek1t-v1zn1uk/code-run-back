@@ -27,7 +27,10 @@ data class Contest(
     var freezeTime: Instant? = null,
 
     @Column(name = "end_time", nullable = false)
-    var endTime: Instant
+    var endTime: Instant,
+
+    @Column(name = "results_calculated", nullable = false)
+    var resultsCalculated: Boolean = false
 ) {
     fun toDto() = ContestDto(
         id = this.id!!,

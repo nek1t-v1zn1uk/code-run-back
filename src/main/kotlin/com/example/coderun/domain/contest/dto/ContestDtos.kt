@@ -53,7 +53,8 @@ data class ScoreboardRowDto(
     val username: String, // Actually firstName + lastName
     val solvedCount: Int,
     val totalScore: Int,
-    val problemStats: Map<Int, ScoreboardProblemStatDto>
+    val problemStats: Map<Int, ScoreboardProblemStatDto>,
+    val place: Int = 0
 )
 
 data class ScoreboardProblemStatDto(

@@ -265,9 +265,22 @@ class ContestService(
                 .thenBy { it.totalScore }
         )
         
+        var currentPlace = 1
+        var previousRow: ScoreboardRowDto? = null
+        val finalRows = sortedRows.mapIndexed { index, row ->
+            if (previousRow != null && previousRow!!.solvedCount == row.solvedCount && previousRow!!.totalScore == row.totalScore) {
+                // same place as previous
+                row.copy(place = currentPlace)
+            } else {
+                currentPlace = index + 1
+                previousRow = row
+                row.copy(place = currentPlace)
+            }
+        }
+        
         return ScoreboardDto(
             contestId = contestId,
-            rows = sortedRows
+            rows = finalRows
         )
     }
 }
