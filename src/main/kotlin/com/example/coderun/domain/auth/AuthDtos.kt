@@ -43,4 +43,5 @@ data class LoginResponse(
     val email: String,
     val accessToken: String,
     val expireDate: Instant,
+    val role: String
 )

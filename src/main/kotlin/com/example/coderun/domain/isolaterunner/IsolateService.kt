@@ -12,8 +12,25 @@ class IsolateService {
     private val activeProcessorCount = System.getenv("ACTIVE_PROCESSOR_COUNT_FOR_CODE_COMPILATION") ?: 2
     val boxIds = ArrayDeque<Int>().apply { addAll(1..999) }
 
+    fun compileCode(code: String, language: String): Path {
+        return createCodeFile(code, language)
+    }
+
     fun executeCode(
         code: String,
+        language: String,
+        input: String = "",
+        timeInSec: Float = 1.0F,
+        memoryInKB: Int = 256_000
+    ): IsolateCodeResult {
+        val binaryPath = compileCode(code, language)
+        val result = executeCompiledCode(binaryPath, language, input, timeInSec, memoryInKB)
+        Files.deleteIfExists(binaryPath)
+        return result
+    }
+
+    fun executeCompiledCode(
+        binaryPath: Path,
         language: String,
         input: String = "",
         timeInSec: Float = 1.0F,
@@ -27,9 +44,8 @@ class IsolateService {
         val boxDir = "${initDir.removeSuffix("\n")}/box"
 
         // create needed files in box
-        val tempCodeFile = createCodeFile(code, language)
-        val codeFilename = tempCodeFile.fileName.toString()
-        runCommand("sudo cp $tempCodeFile $boxDir/$codeFilename")
+        val codeFilename = binaryPath.fileName.toString()
+        runCommand("sudo cp $binaryPath $boxDir/$codeFilename")
         val tempInputFile = Files.createTempFile("input", ".txt")
         Files.writeString(tempInputFile, input)
         runCommand("sudo cp $tempInputFile $boxDir/input.txt")
@@ -84,7 +100,6 @@ class IsolateService {
         // clear the box
         runCommand("sudo isolate --cleanup --cg --box-id=$boxId")
         Files.deleteIfExists(tempInputFile)
-        Files.deleteIfExists(tempCodeFile)
         boxIds.addLast(boxId)
 
         return result
@@ -107,7 +122,7 @@ class IsolateService {
             }
     }
 
-    private fun createCodeFile(code: String, language: String): Path{
+    private fun createCodeFile(code: String, language: String): Path {
         lateinit var tempCodeFile: Path
         if(language == "c") {
             // create .c file

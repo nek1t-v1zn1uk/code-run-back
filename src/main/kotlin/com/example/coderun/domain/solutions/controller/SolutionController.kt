@@ -21,7 +21,7 @@ class SolutionController(
     @ResponseStatus(HttpStatus.CREATED)
     @ValidatesInput
     @ApiResponse(responseCode = "400", description = "Version of language must be specified")
-    @ApiResponse(responseCode = "404", description = "Problem/Language/Language with version not found")
+    @ApiResponse(responseCode = "404", description = "Problem/Language/Language with version/Contest/Contest problem not found")
     fun sendSolution(
         @PathVariable problemId: Int,
         @RequestBody @Valid request: SendSolutionRequest
@@ -34,5 +34,12 @@ class SolutionController(
     @ApiResponse(responseCode = "404", description = "Solution not found or authenticated user does not have permission")
     fun getSolution(@PathVariable solutionId: Int): ResponseEntity<SolutionDto> {
         return ResponseEntity.ok(solutionService.getSolutionDto(solutionId))
+    }
+
+    @GetMapping("problems/{problemId}/solutions")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "404", description = "Problem not found")
+    fun getSolutionsForProblem(@PathVariable problemId: Int): ResponseEntity<List<SolutionDto>> {
+        return ResponseEntity.ok(solutionService.getSolutionsForProblem(problemId))
     }
 }

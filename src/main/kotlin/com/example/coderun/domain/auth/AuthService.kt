@@ -40,11 +40,13 @@ class AuthService(
         )
         val userDetails = authentication.principal as UserDetails
         val accessToken = jwtUtils.generateToken(userDetails)
+        val role = userDetails.authorities.firstOrNull()?.authority?.removePrefix("ROLE_") ?: "USER"
 
         return LoginResponse(
             email = request.email,
             accessToken = accessToken,
-            expireDate = jwtUtils.extractExpiration(accessToken).toInstant()
+            expireDate = jwtUtils.extractExpiration(accessToken).toInstant(),
+            role = role
         )
     }
 

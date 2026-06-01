@@ -1,0 +1,1 @@
+ALTER TABLE contests ADD COLUMN results_calculated BOOLEAN NOT NULL DEFAULT FALSE;

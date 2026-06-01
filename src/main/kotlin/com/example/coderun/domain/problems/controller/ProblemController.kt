@@ -74,6 +74,14 @@ class ProblemController (
     @ResponseStatus(HttpStatus.OK)
     @ValidatesInput
     fun getProblems(@Valid @ModelAttribute request: GetProblemsRequest): ResponseEntity<ProblemPageResponse> {
-        return ResponseEntity.ok(problemService.getProblemsWrapped(request))
+        return ResponseEntity.ok(problemService.getProblemsWrapped(request, includePrivate = false))
+    }
+
+    @GetMapping("/admin")
+    @ResponseStatus(HttpStatus.OK)
+    @AdminOnly
+    @ValidatesInput
+    fun getAdminProblems(@Valid @ModelAttribute request: GetProblemsRequest): ResponseEntity<ProblemPageResponse> {
+        return ResponseEntity.ok(problemService.getProblemsWrapped(request, includePrivate = true))
     }
 }

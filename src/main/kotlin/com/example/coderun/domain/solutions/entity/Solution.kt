@@ -1,5 +1,7 @@
 package com.example.coderun.domain.solutions.entity
 
+import com.example.coderun.domain.contest.entity.Contest
+import com.example.coderun.domain.contest.entity.ContestProblem
 import com.example.coderun.domain.problems.entity.Problem
 import com.example.coderun.domain.solutions.dto.SolutionDto
 import com.example.coderun.domain.users.User
@@ -22,6 +24,14 @@ data class Solution(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     var user: User,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contest_id")
+    var contest: Contest? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contest_problem_id")
+    var contestProblem: ContestProblem? = null,
 
     @Column
     var code: String? = null,
@@ -53,8 +63,12 @@ data class Solution(
         id = this.id!!,
         problemId = this.problem.id!!,
         userId = this.user.id!!,
+        userFirstName = this.user.firstName,
+        userLastName = this.user.lastName,
         code = this.code!!,
         language = this.language,
+        contestId = this.contest?.id,
+        contestProblemId = this.contestProblem?.id,
         status = this.status,
         testCaseReached = this.testCaseReached,
         executionTimeMs = this.executionTimeMs,
