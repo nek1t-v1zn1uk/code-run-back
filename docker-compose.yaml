@@ -17,6 +17,14 @@ services:
       POSTGRES_USER: ${TEST_POSTGRES_USER}
       POSTGRES_PASSWORD: ${TEST_POSTGRES_PASSWORD}
       POSTGRES_DB: ${TEST_POSTGRES_DB}
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --save 60 1 --loglevel warning
 
 volumes:
   postgres_data:
+  redis_data:

@@ -39,4 +39,29 @@ class UserService (
         return userRepository.save(newUser)
     }
 
+    fun getUserProfile(user: User): UserProfileDto {
+        return UserProfileDto(
+            id = user.id!!,
+            email = user.email,
+            firstName = user.firstName,
+            lastName = user.lastName,
+            photoUrl = user.photoUrl,
+            role = user.role.name,
+            createdAt = user.createdAt
+        )
+    }
+
+    fun updateProfile(user: User, request: UpdateProfileRequest): UserProfileDto {
+        user.firstName = request.firstName
+        user.lastName = request.lastName
+        val updatedUser = userRepository.save(user)
+        return getUserProfile(updatedUser)
+    }
+
+    fun updateAvatar(user: User, photoUrl: String?): UserProfileDto {
+        user.photoUrl = photoUrl
+        val updatedUser = userRepository.save(user)
+        return getUserProfile(updatedUser)
+    }
+
 }

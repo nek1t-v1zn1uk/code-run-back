@@ -3,6 +3,7 @@ package com.example.coderun.domain.contest.service
 import com.example.coderun.domain.contest.repository.ContestMemberRepository
 import com.example.coderun.domain.contest.repository.ContestRepository
 import org.slf4j.LoggerFactory
+import org.springframework.cache.CacheManager
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +13,8 @@ import java.time.Instant
 class ContestResultScheduler(
     private val contestRepository: ContestRepository,
     private val contestMemberRepository: ContestMemberRepository,
-    private val contestService: ContestService
+    private val contestService: ContestService,
+    private val cacheManager: CacheManager
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -24,6 +26,8 @@ class ContestResultScheduler(
         for (contest in endedContests) {
             log.info("Calculating final results for contest: ${contest.id} - ${contest.name}")
             try {
+                // Evict cached scoreboard to ensure final results use fresh data
+                cacheManager.getCache("scoreboard")?.evict(contest.id!!)
                 val scoreboard = contestService.getScoreboard(contest.id!!)
                 
                 for (row in scoreboard.rows) {

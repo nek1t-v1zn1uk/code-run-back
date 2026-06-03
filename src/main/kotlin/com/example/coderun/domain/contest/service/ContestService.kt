@@ -6,6 +6,9 @@ import com.example.coderun.domain.contest.repository.*
 import com.example.coderun.domain.problems.repository.ProblemRepository
 import com.example.coderun.domain.users.UserRepository
 import jakarta.persistence.EntityNotFoundException
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.annotation.Caching
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -63,11 +66,13 @@ class ContestService(
         return contestRepository.save(contest).toDto()
     }
     
+    @Cacheable(value = ["contest-problems"], key = "#contestId")
     fun getContestProblems(contestId: Int): List<ContestProblemDto> {
         return contestProblemRepository.findAllByContestId(contestId).map { it.toDto() }
     }
 
     @Transactional
+    @CacheEvict(value = ["contest-problems"], key = "#contestId")
     fun addProblemToContest(contestId: Int, request: AddContestProblemRequest): ContestProblemDto {
         val contest = contestRepository.findById(contestId).getOrNull()
             ?: throw EntityNotFoundException("Contest not found")
@@ -84,6 +89,7 @@ class ContestService(
     }
 
     @Transactional
+    @CacheEvict(value = ["contest-problems"], key = "#contestId")
     fun updateContestProblems(contestId: Int, request: UpdateContestProblemsRequest): List<ContestProblemDto> {
         val contest = contestRepository.findById(contestId).getOrNull()
             ?: throw EntityNotFoundException("Contest not found")
@@ -121,6 +127,7 @@ class ContestService(
     }
 
     @Transactional
+    @CacheEvict(value = ["scoreboard"], key = "#contestId")
     fun joinContest(contestId: Int, userId: Int): ContestMemberDto {
         if (hasJoinedContest(contestId, userId)) {
             throw IllegalArgumentException("User has already joined this contest")
@@ -192,6 +199,7 @@ class ContestService(
         )
     }
 
+    @Cacheable(value = ["scoreboard"], key = "#contestId")
     fun getScoreboard(contestId: Int): ScoreboardDto {
         val contest = contestRepository.findById(contestId).getOrNull()
             ?: throw EntityNotFoundException("Contest not found")

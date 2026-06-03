@@ -54,6 +54,9 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
+    // Redis & Caching
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
 }
 
 kotlin {
