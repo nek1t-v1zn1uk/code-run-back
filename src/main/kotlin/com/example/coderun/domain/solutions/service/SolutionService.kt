@@ -18,6 +18,7 @@ import com.example.coderun.domain.contest.repository.ContestRepository
 import com.example.coderun.domain.contest.repository.ContestProblemRepository
 import org.springframework.transaction.support.TransactionSynchronization
 import org.springframework.transaction.support.TransactionSynchronizationManager
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 
 @Service
 class SolutionService(
@@ -29,6 +30,7 @@ class SolutionService(
     private val contestProblemRepository: ContestProblemRepository,
     private val commentRepository: CommentRepository,
     private val broadcastService: SolutionBroadcastService,
+    private val rabbitTemplate: RabbitTemplate,
 ) {
     @Transactional
     fun createSolution(problemId: Int, request: SendSolutionRequest): SolutionDto {
@@ -74,7 +76,7 @@ class SolutionService(
         
         TransactionSynchronizationManager.registerSynchronization(object : TransactionSynchronization {
             override fun afterCommit() {
-                evaluationService.enqueueSolution(newSolution.id!!)
+                rabbitTemplate.convertAndSend("solution-queue", newSolution.id.toString())
             }
         })
 

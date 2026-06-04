@@ -57,6 +57,10 @@ dependencies {
     // Redis & Caching
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-cache")
+    // RabbitMQ
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
+    // JUnixSocket for UDS
+    implementation("com.kohlschutter.junixsocket:junixsocket-core:2.9.0")
 }
 
 kotlin {

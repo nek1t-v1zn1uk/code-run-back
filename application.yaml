@@ -24,12 +24,21 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
   servlet:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
 app:
   upload-dir: ./uploads
+  isolate-socket-path: /var/run/code-run-isolate-daemon.sock
+  admin:
+    email: ${ADMIN_EMAIL:admin@coderun.local}
+    password: ${ADMIN_PASSWORD:admin}
 
 springdoc:
   swagger-ui:

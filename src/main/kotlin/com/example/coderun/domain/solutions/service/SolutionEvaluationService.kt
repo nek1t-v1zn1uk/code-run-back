@@ -11,10 +11,8 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
 import java.time.Instant
-import java.util.LinkedList
-import java.util.Queue
 import kotlin.math.roundToInt
-import java.util.concurrent.CompletableFuture
+import org.springframework.amqp.rabbit.annotation.RabbitListener
 
 @Service
 class SolutionEvaluationService(
@@ -23,22 +21,11 @@ class SolutionEvaluationService(
     private val broadcastService: SolutionBroadcastService,
     private val eventPublisher: ApplicationEventPublisher,
     private val transactionTemplate: TransactionTemplate,
-
-    private val queue: Queue<Int> = LinkedList(),
 ) {
-    @Synchronized
-    fun enqueueSolution(solutionId: Int) {
-        println("ENQUEUING SOLUTION: $solutionId")
-        val wasEmpty = queue.isEmpty()
-        queue.add(solutionId)
-        println("QUEUE SIZE IS NOW: ${queue.size}, WAS EMPTY: $wasEmpty")
-        if (wasEmpty) {
-            println("STARTING ASYNC EVALUATION THREAD")
-            CompletableFuture.runAsync {
-                println("ASYNC THREAD STARTED")
-                evaluateNextSolution()
-            }
-        }
+    @RabbitListener(queues = ["solution-queue"])
+    fun processSolution(solutionIdStr: String) {
+        val solutionId = solutionIdStr.toInt()
+        evaluateSolution(solutionId)
     }
 
     fun evaluateSolution(solutionId: Int) {
@@ -142,7 +129,7 @@ class SolutionEvaluationService(
                         10F,
                         1024*1024
                     )
-                    java.nio.file.Files.deleteIfExists(scriptCheckerPath)
+                    isolateService.cleanupBinary(scriptCheckerPath)
                     
                     if(checkerResult.status != "OK" || checkerResult.stdout.trim() == "False") {
                         solution.status = SolutionStatus.TEST_FAILED
@@ -174,7 +161,7 @@ class SolutionEvaluationService(
             }
         }
         
-            java.nio.file.Files.deleteIfExists(binaryPath)
+            isolateService.cleanupBinary(binaryPath)
             
             if(index == tests!!.size) {
                 solution!!.status = SolutionStatus.SUCCESS
@@ -200,23 +187,6 @@ class SolutionEvaluationService(
                     println("FAILED TO SET INTERNAL ERROR STATUS: ${ignored.message}")
                 }
             }
-        } finally {
-            println("FINALLY BLOCK REACHED. CALLING evaluateNextSolution()")
-            evaluateNextSolution()
         }
     }
-
-    @Synchronized
-    private fun pollNextSolution(): Int? {
-        val next = queue.poll()
-        println("POLLED NEXT SOLUTION: $next")
-        return next
-    }
-
-    fun evaluateNextSolution() {
-        println("EVALUATE NEXT SOLUTION CALLED")
-        val solutionId = pollNextSolution() ?: return
-        evaluateSolution(solutionId)
-    }
-
 }

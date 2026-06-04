@@ -1,0 +1,8 @@
+.gradle/
+build/
+.idea/
+.kotlin/
+.git/
+*.iml
+.env
+uploads/

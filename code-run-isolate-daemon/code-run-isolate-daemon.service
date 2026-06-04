@@ -1,0 +1,12 @@
+[Unit]
+Description=Isolate Sandbox Daemon
+After=network.target
+
+[Service]
+ExecStart=/opt/code-run-isolate-daemon/code-run-isolate-daemon
+Environment=ISOLATE_SOCKET_PATH=/var/run/code-run-isolate-daemon.sock
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
