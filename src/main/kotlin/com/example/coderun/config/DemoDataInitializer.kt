@@ -70,11 +70,11 @@ class DemoDataInitializer(
         println("Users seeded: admin@example.com, u1-u5@example.com.")
 
         // 4. Seed Topics
-        val topicBeginners = problemTopicRepository.save(ProblemTopic("For Beginners"))
-        val topicBruteForce = problemTopicRepository.save(ProblemTopic("Brute Force"))
-        val topicCombinatorics = problemTopicRepository.save(ProblemTopic("Combinatorics"))
-        val topicDP = problemTopicRepository.save(ProblemTopic("Dynamic Programming"))
-        val topicGraphs = problemTopicRepository.save(ProblemTopic("Graphs"))
+        val topicBeginners = problemTopicRepository.save(ProblemTopic(name = "For Beginners"))
+        val topicBruteForce = problemTopicRepository.save(ProblemTopic(name = "Brute Force"))
+        val topicCombinatorics = problemTopicRepository.save(ProblemTopic(name = "Combinatorics"))
+        val topicDP = problemTopicRepository.save(ProblemTopic(name = "Dynamic Programming"))
+        val topicGraphs = problemTopicRepository.save(ProblemTopic(name = "Graphs"))
         println("Topics seeded: For Beginners, Brute Force, Combinatorics, Dynamic Programming, Graphs.")
 
         // 5. Seed Script Checkers

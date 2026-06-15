@@ -31,9 +31,9 @@ class ProblemService (
     @Transactional
     fun createProblem(request: CreateProblemRequest): ProblemDto {
         val topic =
-            if(request.topic == null) null
-            else problemTopicRepository.findByName(request.topic)
-                ?: throw EntityNotFoundException("Problem topic with name \"${request.topic}\" not found")
+            if(request.topicId == null) null
+            else problemTopicRepository.findById(request.topicId).getOrNull()
+                ?: throw EntityNotFoundException("Problem topic with id \"${request.topicId}\" not found")
 
         val scriptChecker =
             if(request.defaultScriptCheckerId == null) null
@@ -60,9 +60,9 @@ class ProblemService (
             ?: throw EntityNotFoundException("Problem with id $problemId not found")
 
         val topic =
-            if(request.topic == null) null
-            else problemTopicRepository.findByName(request.topic)
-                ?: throw EntityNotFoundException("Problem topic with name \"${request.topic}\" not found")
+            if(request.topicId == null) null
+            else problemTopicRepository.findById(request.topicId).getOrNull()
+                ?: throw EntityNotFoundException("Problem topic with id \"${request.topicId}\" not found")
 
         val scriptChecker =
             if(request.defaultScriptCheckerId == null) null
@@ -70,7 +70,7 @@ class ProblemService (
                 ?: throw EntityNotFoundException("Script checker with id \"${request.defaultScriptCheckerId}\" not found")
 
         request.title?.let { problem.title = it }
-        topic?.let { problem.topic = it }
+        if (request.topicId != null) { problem.topic = topic }
         request.difficulty?.let { problem.difficulty = it }
         request.statement?.let { problem.statement = it }
         request.executionTimeLimitMs?.let { problem.executionTimeLimitMs = it }
@@ -90,7 +90,7 @@ class ProblemService (
 
     @Transactional(readOnly = true)
     fun getProblemTopics(): List<ProblemTopic> {
-        val problemTopics = problemTopicRepository.findAll()
+        val problemTopics = problemTopicRepository.findAll(org.springframework.data.domain.Sort.by("id"))
         return problemTopics
     }
 

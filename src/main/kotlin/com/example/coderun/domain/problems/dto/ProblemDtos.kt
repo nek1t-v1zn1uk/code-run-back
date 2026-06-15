@@ -12,6 +12,18 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.time.Instant
 
+data class CreateProblemTopicRequest(
+    @field:NotBlank
+    @field:Size(min = 3, max = 32)
+    val name: String
+)
+
+data class UpdateProblemTopicRequest(
+    @field:NotBlank
+    @field:Size(min = 3, max = 32)
+    val name: String
+)
+
 data class ExampleTestDto(
     val inputData: String,
     val expectedOutput: String?
@@ -37,8 +49,7 @@ data class CreateProblemRequest(
     @field:Size(min = 3, max = 255)
     val title: String = "",
 
-    @field:Size(min = 3, max = 32)
-    val topic: String? = null,
+    val topicId: Int? = null,
 
     @field:NotNull
     @field:Schema(implementation = ProblemDifficulty::class)
@@ -70,8 +81,7 @@ data class UpdateProblemRequest(
     @field:Size(min = 3, max = 255)
     val title: String? = null,
 
-    @field:Size(min = 3, max = 32)
-    val topic: String? = null,
+    val topicId: Int? = null,
 
     @field:Schema(implementation = ProblemDifficulty::class)
     val difficulty: ProblemDifficulty? = null,

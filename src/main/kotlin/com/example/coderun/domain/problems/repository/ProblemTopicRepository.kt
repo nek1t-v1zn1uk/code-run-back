@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProblemTopicRepository : JpaRepository<ProblemTopic, String> {
+interface ProblemTopicRepository : JpaRepository<ProblemTopic, Int> {
     fun findByName(name: String): ProblemTopic?
 }

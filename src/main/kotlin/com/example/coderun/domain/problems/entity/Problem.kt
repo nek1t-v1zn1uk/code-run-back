@@ -19,7 +19,7 @@ data class Problem(
     var title: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "topic")
+    @JoinColumn(name = "topic_id")
     var topic: ProblemTopic? = null,
 
     @Enumerated(EnumType.ORDINAL)
