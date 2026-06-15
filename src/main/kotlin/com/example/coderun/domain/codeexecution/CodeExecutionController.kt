@@ -18,10 +18,6 @@ class CodeExecutionController(
     @PostMapping
     fun runCode(@RequestBody request: CodeExecutionRequest): ResponseEntity<*> {
         val response = codeExecutionService.runCode(request)
-        return if(response.status == "OK") {
-            ResponseEntity.ok(response)
-        } else {
-            ResponseEntity(response, HttpStatus.CONFLICT)
-        }
+        return ResponseEntity.ok(response)
     }
 }

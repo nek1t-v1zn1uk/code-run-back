@@ -30,7 +30,7 @@ class SecurityConfig {
     ): SecurityFilterChain {
         http
             .csrf { it.disable() }
-            //.cors { it.configurationSource(corsConfigurationSource()) }
+            .cors { }
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers(
                     "/swagger-ui.html","/swagger-ui/**",
