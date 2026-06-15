@@ -31,15 +31,15 @@ class FileStorageService {
         val allowedExtensions = listOf("jpg", "jpeg", "png", "gif", "webp")
 
         if (extension.lowercase() !in allowedExtensions) {
-            throw IllegalArgumentException("Invalid file extension. Allowed extensions are: \${allowedExtensions.joinToString()}")
+            throw IllegalArgumentException("Invalid file extension. Allowed extensions are: ${allowedExtensions.joinToString()}")
         }
 
-        val filename = "\${UUID.randomUUID()}.\$extension"
+        val filename = "${UUID.randomUUID()}.$extension"
         val targetLocation = avatarsLocation.resolve(filename)
 
         Files.copy(file.inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING)
 
-        return "avatars/\$filename"
+        return "avatars/$filename"
     }
 
     fun deleteAvatar(relativePath: String) {

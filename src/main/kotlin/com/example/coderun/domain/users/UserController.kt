@@ -56,4 +56,12 @@ class UserController(
         
         return ResponseEntity.ok(userService.updateAvatar(user, null))
     }
+
+    @PostMapping("/me/password")
+    @ValidatesInput
+    fun changePassword(@Valid @RequestBody request: ChangePasswordRequest): ResponseEntity<Void> {
+        val user = getCurrentUser()
+        userService.changePassword(user, request)
+        return ResponseEntity.ok().build()
+    }
 }

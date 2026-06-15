@@ -21,3 +21,11 @@ data class UpdateProfileRequest(
     @field:Size(min = 1, max = 32)
     val lastName: String? = null
 )
+
+data class ChangePasswordRequest(
+    @field:NotBlank
+    val oldPassword: String = "",
+    
+    @field:NotBlank @field:Size(min = 6, max = 64)
+    val newPassword: String = ""
+)

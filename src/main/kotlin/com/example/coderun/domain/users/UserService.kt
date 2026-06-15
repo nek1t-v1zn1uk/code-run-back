@@ -3,11 +3,13 @@ package com.example.coderun.domain.users
 import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class UserService (
     private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
 ) : UserDetailsService {
 
     override fun loadUserByUsername(username: String) = loadUserByEmail(username)
@@ -62,6 +64,14 @@ class UserService (
         user.photoUrl = photoUrl
         val updatedUser = userRepository.save(user)
         return getUserProfile(updatedUser)
+    }
+
+    fun changePassword(user: User, request: ChangePasswordRequest) {
+        if (!passwordEncoder.matches(request.oldPassword, user.passwordHash)) {
+            throw IllegalArgumentException("Incorrect old password")
+        }
+        user.passwordHash = passwordEncoder.encode(request.newPassword)!!
+        userRepository.save(user)
     }
 
 }
