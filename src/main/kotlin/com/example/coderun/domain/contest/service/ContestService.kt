@@ -66,6 +66,7 @@ class ContestService(
         return contestRepository.save(contest).toDto()
     }
     
+    @Transactional(readOnly = true)
     @Cacheable(value = ["contest-problems"], key = "#contestId")
     fun getContestProblems(contestId: Int): List<ContestProblemDto> {
         return contestProblemRepository.findAllByContestId(contestId).map { it.toDto() }
@@ -112,6 +113,7 @@ class ContestService(
         return contestProblemRepository.saveAll(newProblems).map { it.toDto() }
     }
 
+    @Transactional(readOnly = true)
     fun getContestMembers(contestId: Int): List<ContestMemberDto> {
         return contestMemberRepository.findAllByContestId(contestId).map { it.toDto() }
     }

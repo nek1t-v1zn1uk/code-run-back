@@ -120,6 +120,12 @@ class ProblemService (
             request.difficulty?.let {
                 predicates.add(cb.equal(root.get<ProblemDifficulty>("difficulty"), it))
             }
+            request.searchQuery?.takeIf { it.isNotBlank() }?.let { search ->
+                val likeQuery = "%${search.lowercase()}%"
+                val titleLike = cb.like(cb.lower(root.get("title")), likeQuery)
+                val statementLike = cb.like(cb.lower(root.get("statement")), likeQuery)
+                predicates.add(cb.or(titleLike, statementLike))
+            }
 
             // keyset logic
             // (difficulty > lastDifficulty) OR (difficulty = lastDifficulty AND id > lastId)

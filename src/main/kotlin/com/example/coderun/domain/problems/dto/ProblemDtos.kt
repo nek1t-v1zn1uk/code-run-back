@@ -107,6 +107,7 @@ data class UpdateProblemRequest(
 data class GetProblemsRequest(
     val difficulty: ProblemDifficulty?,
     val topicName: String?,
+    val searchQuery: String?,
     val limit: Int = 10,
     val cursor: String?,
 )
