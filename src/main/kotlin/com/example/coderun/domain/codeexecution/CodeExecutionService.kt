@@ -8,9 +8,25 @@ import java.time.Instant.now
 class CodeExecutionService(
     private val isolateService: IsolateService
 ) {
+    companion object {
+        const val MAX_OUTPUT_BYTES = 1 * 1024 * 1024 // 1 MB
+    }
+
     fun runCode(request: CodeExecutionRequest): CodeExecutionResponse {
         return try {
             val codeResult = isolateService.executeCode(request.code, request.language, request.input)
+
+            if (codeResult.status == "OK" && codeResult.stdout.length > MAX_OUTPUT_BYTES) {
+                return CodeExecutionResponse(
+                    status = "Output Limit Exceeded",
+                    exitCode = codeResult.exitCode,
+                    output = codeResult.stdout.take(4096) + "\n\n... output truncated (exceeded 1 MB limit)",
+                    time = codeResult.time,
+                    memory = codeResult.memory,
+                    error = "Program produced too much output (limit: 1 MB)"
+                )
+            }
+
             CodeExecutionResponse(
                 status = when(codeResult.status) {
                     "OK" -> "OK"

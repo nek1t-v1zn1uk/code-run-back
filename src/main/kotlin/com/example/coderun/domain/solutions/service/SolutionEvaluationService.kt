@@ -22,6 +22,10 @@ class SolutionEvaluationService(
     private val eventPublisher: ApplicationEventPublisher,
     private val transactionTemplate: TransactionTemplate,
 ) {
+    companion object {
+        const val MAX_OUTPUT_BYTES = 1 * 1024 * 1024 // 1 MB
+    }
+
     @RabbitListener(queues = ["solution-queue"])
     fun processSolution(solutionIdStr: String) {
         val solutionId = solutionIdStr.toInt()
@@ -112,6 +116,13 @@ class SolutionEvaluationService(
             }
 
             if(solutionResult.status == "OK"){
+                // Check output limit before comparing
+                if (solutionResult.stdout.length > MAX_OUTPUT_BYTES) {
+                    solution.status = SolutionStatus.OUTPUT_LIMIT_EXCEEDED
+                    solution.testCaseReached = index
+                    break
+                }
+
                 val evaluationType = test.overrideEvaluationType ?: problem.defaultEvaluationType!!
                 if(evaluationType == EvaluationType.EXACT_MATCH) {
                     if(!test.expectedOutput.equals(solutionResult.stdout.trim())) {
@@ -150,7 +161,7 @@ class SolutionEvaluationService(
                                 solution.executionMemoryKb = solutionResult.memory.toInt()
                                 SolutionStatus.MEMORY_LIMIT_EXCEEDED
                             }
-                            25 -> SolutionStatus.OUTPUT_LIMIT_EXCEEDED // doesnt work for now
+                            25 -> SolutionStatus.OUTPUT_LIMIT_EXCEEDED
                             else -> SolutionStatus.INTERNAL_ERROR
                         }
                     }
