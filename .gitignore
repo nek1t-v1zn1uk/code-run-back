@@ -40,3 +40,5 @@ out/
 .kotlin
 .env
 http-client.private.env.json
+
+/uploads

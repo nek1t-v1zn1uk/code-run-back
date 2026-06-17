@@ -38,7 +38,8 @@ class SecurityConfig {
                     "/api/v*/auth/**",
                     "/api/v*/no-auth/**",
                     "/ws-coderun/**",
-                    "/uploads/**"
+                    "/uploads/**",
+                    "/api/v*/home/**"
                 ).permitAll()
                 auth.anyRequest().authenticated()
             }
