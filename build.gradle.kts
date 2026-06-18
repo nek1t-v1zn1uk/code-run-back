@@ -28,6 +28,7 @@ dependencies {
     // Kotlin modules
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("tools.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     // Sprint Boot Dev Tools
     developmentOnly("org.springframework.boot:spring-boot-devtools")

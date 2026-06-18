@@ -20,6 +20,11 @@ import com.example.coderun.domain.tests.repository.TestRepository
 import com.example.coderun.domain.users.User
 import com.example.coderun.domain.users.UserRepository
 import com.example.coderun.domain.users.UserRoles
+import com.example.coderun.domain.solutions.entity.Solution
+import com.example.coderun.domain.solutions.entity.SolutionStatus
+import com.example.coderun.domain.solutions.repository.SolutionRepository
+import com.example.coderun.domain.comments.entity.Comment
+import com.example.coderun.domain.comments.repository.CommentRepository
 import jakarta.persistence.EntityManager
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Profile
@@ -43,7 +48,9 @@ class DemoDataInitializer(
     private val testRepository: TestRepository,
     private val scriptCheckerRepository: ScriptCheckerRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val entityManager: EntityManager
+    private val entityManager: EntityManager,
+    private val solutionRepository: SolutionRepository,
+    private val commentRepository: CommentRepository
 ) : CommandLineRunner {
 
     @Transactional
@@ -61,13 +68,13 @@ class DemoDataInitializer(
             ?: throw IllegalStateException("Python language not found in DB")
 
         // 3. Seed Users
-        val admin = userRepository.save(User(firstName = "Admin", lastName = "System", email = "admin@example.com", passwordHash = passwordEncoder.encode("Pass123$")!!, role = UserRoles.ADMIN))
-        val u1 = userRepository.save(User(firstName = "UserOne", lastName = "First", email = "u1@example.com", passwordHash = passwordEncoder.encode("Pass123$")!!, role = UserRoles.USER))
-        val u2 = userRepository.save(User(firstName = "UserTwo", lastName = "Second", email = "u2@example.com", passwordHash = passwordEncoder.encode("Pass123$")!!, role = UserRoles.USER))
-        val u3 = userRepository.save(User(firstName = "UserThree", lastName = "Third", email = "u3@example.com", passwordHash = passwordEncoder.encode("Pass123$")!!, role = UserRoles.USER))
-        val u4 = userRepository.save(User(firstName = "UserFour", lastName = "Fourth", email = "u4@example.com", passwordHash = passwordEncoder.encode("Pass123$")!!, role = UserRoles.USER))
-        val u5 = userRepository.save(User(firstName = "UserFive", lastName = null, email = "u5@example.com", passwordHash = passwordEncoder.encode("Pass123$")!!, role = UserRoles.USER))
-        println("Users seeded: admin@example.com, u1-u5@example.com.")
+        val admin = userRepository.save(User(firstName = "Artem", lastName = "Kyrylenko", email = "admin@example.com", passwordHash = passwordEncoder.encode("Pass123$")!!, role = UserRoles.ADMIN))
+        val u1 = userRepository.save(User(firstName = "Dmitry", lastName = "Petrenko", email = "u1@example.com", passwordHash = passwordEncoder.encode("Pass123$")!!, role = UserRoles.USER))
+        val u2 = userRepository.save(User(firstName = "Yaroslav", lastName = "Shevchenko", email = "u2@example.com", passwordHash = passwordEncoder.encode("Pass123$")!!, role = UserRoles.USER))
+        val u3 = userRepository.save(User(firstName = "Kateryna", lastName = "Kovalenko", email = "u3@example.com", passwordHash = passwordEncoder.encode("Pass123$")!!, role = UserRoles.USER))
+        val u4 = userRepository.save(User(firstName = "Oleksandr", lastName = "Moroz", email = "u4@example.com", passwordHash = passwordEncoder.encode("Pass123$")!!, role = UserRoles.USER))
+        val u5 = userRepository.save(User(firstName = "Anastasia", lastName = "Ivanova", email = "u5@example.com", passwordHash = passwordEncoder.encode("Pass123$")!!, role = UserRoles.USER))
+        println("Users seeded: admin (Artem), u1-u5 (Dmitry, Yaroslav, Kateryna, Oleksandr, Anastasia).")
 
         // 4. Seed Topics
         val topicBeginners = problemTopicRepository.save(ProblemTopic(name = "For Beginners"))
@@ -1085,7 +1092,7 @@ class DemoDataInitializer(
         val problemsToDuplicate = publicProblems.take(10)
         
         // Contest 1 Problems
-        problemsToDuplicate.forEachIndexed { index, publicProb ->
+        val contest1Problems = problemsToDuplicate.mapIndexed { index, publicProb ->
             val npProb = duplicateAsNonPublic(publicProb)
             contestProblemRepository.save(ContestProblem(
                 contest = contest1,
@@ -1095,7 +1102,7 @@ class DemoDataInitializer(
         }
 
         // Contest 2 Problems
-        problemsToDuplicate.forEachIndexed { index, publicProb ->
+        val contest2Problems = problemsToDuplicate.mapIndexed { index, publicProb ->
             val npProb = duplicateAsNonPublic(publicProb)
             contestProblemRepository.save(ContestProblem(
                 contest = contest2,
@@ -1103,6 +1110,207 @@ class DemoDataInitializer(
                 ordinal = index + 1
             ))
         }
+
+        // 8. Seed Solutions for Trending and In Progress imitation
+        // Trending: Simple A+B (Problem 1), Watermelon (Problem 4), Way Too Long Words (Problem 5)
+        val p1 = publicProblems[0] // Simple A+B
+        val p2 = publicProblems[1] // Find Divisor
+        val p3 = publicProblems[2] // Find Any Index
+        val p4 = publicProblems[3] // Watermelon
+        val p5 = publicProblems[4] // Way Too Long Words
+        val p6 = publicProblems[5] // Theatre Square
+
+        // Solutions for Problem 1 (Simple A+B): 5 solutions -> SUCCESS
+        listOf(u1, u2, u3, u4, u5).forEachIndexed { index, user ->
+            solutionRepository.save(Solution(
+                problem = p1,
+                user = user,
+                code = "a, b = map(int, input().split())\nprint(a + b)",
+                language = pythonLang,
+                status = SolutionStatus.SUCCESS,
+                sentAt = now.minus((30 + index).toLong(), ChronoUnit.MINUTES)
+            ))
+        }
+
+        // Solutions for Problem 4 (Watermelon): 4 solutions -> SUCCESS
+        listOf(u1, u2, u3, u4).forEachIndexed { index, user ->
+            solutionRepository.save(Solution(
+                problem = p4,
+                user = user,
+                code = "w = int(input())\nprint('YES' if w > 2 and w % 2 == 0 else 'NO')",
+                language = pythonLang,
+                status = SolutionStatus.SUCCESS,
+                sentAt = now.minus((20 + index).toLong(), ChronoUnit.MINUTES)
+            ))
+        }
+
+        // Solutions for Problem 5 (Way Too Long Words): 3 solutions -> SUCCESS
+        listOf(u1, u2, u3).forEachIndexed { index, user ->
+            solutionRepository.save(Solution(
+                problem = p5,
+                user = user,
+                code = "n = int(input())\nfor _ in range(n):\n    s = input()\n    print(s[0] + str(len(s)-2) + s[-1] if len(s) > 10 else s)",
+                language = pythonLang,
+                status = SolutionStatus.SUCCESS,
+                sentAt = now.minus((15 + index).toLong(), ChronoUnit.MINUTES)
+            ))
+        }
+
+        // Solutions for Problem 6 (Theatre Square): 2 solutions -> SUCCESS
+        listOf(u1, u2).forEachIndexed { index, user ->
+            solutionRepository.save(Solution(
+                problem = p6,
+                user = user,
+                code = "n, m, a = map(int, input().split())\nprint(((n + a - 1) // a) * ((m + a - 1) // a))",
+                language = pythonLang,
+                status = SolutionStatus.SUCCESS,
+                sentAt = now.minus((10 + index).toLong(), ChronoUnit.MINUTES)
+            ))
+        }
+
+        // In Progress solutions for u1 (Dmitry Petrenko):
+        // Fails on Problem 2 (Find Divisor) and Problem 3 (Find Any Index)
+        solutionRepository.save(Solution(
+            problem = p2,
+            user = u1,
+            code = "print(2) # Dumb guess",
+            language = pythonLang,
+            status = SolutionStatus.TEST_FAILED,
+            sentAt = now.minus(5L, ChronoUnit.MINUTES)
+        ))
+
+        solutionRepository.save(Solution(
+            problem = p3,
+            user = u1,
+            code = "print(-1) # Dumb guess",
+            language = pythonLang,
+            status = SolutionStatus.COMPILATION_ERROR,
+            sentAt = now.minus(8L, ChronoUnit.MINUTES)
+        ))
+        println("Solutions seeded to simulate trending (Simple A+B, Watermelon, Way Too Long Words) and in-progress problems for Dmitry Petrenko (Find Divisor, Find Any Index).")
+
+        // 9. Seed some contest submissions for Contest 1 to make the scoreboard look alive
+        val cp1_1 = contest1Problems[0]
+        val cp1_2 = contest1Problems[1]
+
+        // u3 (Kateryna Kovalenko)
+        // Problem 1: SUCCESS at +1 min (4 mins ago)
+        solutionRepository.save(Solution(
+            problem = cp1_1.problem,
+            user = u3,
+            contest = contest1,
+            contestProblem = cp1_1,
+            code = "a, b = map(int, input().split())\nprint(a + b)",
+            language = pythonLang,
+            status = SolutionStatus.SUCCESS,
+            sentAt = now.minus(4L, ChronoUnit.MINUTES),
+            executedAt = now.minus(4L, ChronoUnit.MINUTES)
+        ))
+
+        // Problem 2: WRONG_ANSWER (TEST_FAILED) at +2 min (3 mins ago)
+        solutionRepository.save(Solution(
+            problem = cp1_2.problem,
+            user = u3,
+            contest = contest1,
+            contestProblem = cp1_2,
+            code = "print(0)",
+            language = pythonLang,
+            status = SolutionStatus.TEST_FAILED,
+            sentAt = now.minus(3L, ChronoUnit.MINUTES),
+            executedAt = now.minus(3L, ChronoUnit.MINUTES)
+        ))
+
+        // Problem 2: SUCCESS at +3 min (2 mins ago)
+        solutionRepository.save(Solution(
+            problem = cp1_2.problem,
+            user = u3,
+            contest = contest1,
+            contestProblem = cp1_2,
+            code = "n = int(input())\nfor i in range(2, n):\n    if n % i == 0:\n        print(i)\n        break",
+            language = pythonLang,
+            status = SolutionStatus.SUCCESS,
+            sentAt = now.minus(2L, ChronoUnit.MINUTES),
+            executedAt = now.minus(2L, ChronoUnit.MINUTES)
+        ))
+
+        // u4 (Oleksandr Moroz)
+        // Problem 1: SUCCESS at +2 min (3 mins ago)
+        solutionRepository.save(Solution(
+            problem = cp1_1.problem,
+            user = u4,
+            contest = contest1,
+            contestProblem = cp1_1,
+            code = "a, b = map(int, input().split())\nprint(a + b)",
+            language = pythonLang,
+            status = SolutionStatus.SUCCESS,
+            sentAt = now.minus(3L, ChronoUnit.MINUTES),
+            executedAt = now.minus(3L, ChronoUnit.MINUTES)
+        ))
+
+        // Problem 2: TEST_FAILED at +4 min (1 min ago)
+        solutionRepository.save(Solution(
+            problem = cp1_2.problem,
+            user = u4,
+            contest = contest1,
+            contestProblem = cp1_2,
+            code = "print(1)",
+            language = pythonLang,
+            status = SolutionStatus.TEST_FAILED,
+            sentAt = now.minus(1L, ChronoUnit.MINUTES),
+            executedAt = now.minus(1L, ChronoUnit.MINUTES)
+        ))
+
+        // u5 (Anastasia Ivanova)
+        // Problem 1: COMPILATION_ERROR at +3 min (2 mins ago)
+        solutionRepository.save(Solution(
+            problem = cp1_1.problem,
+            user = u5,
+            contest = contest1,
+            contestProblem = cp1_1,
+            code = "a b = input()",
+            language = pythonLang,
+            status = SolutionStatus.COMPILATION_ERROR,
+            sentAt = now.minus(2L, ChronoUnit.MINUTES),
+            executedAt = now.minus(2L, ChronoUnit.MINUTES)
+        ))
+        println("Seeded Contest 1 submissions for Kateryna Kovalenko, Oleksandr Moroz, Anastasia Ivanova.")
+
+        // Helper to save comments
+        fun saveComment(
+            problem: Problem,
+            user: User,
+            text: String,
+            parent: Comment? = null,
+            createdAt: Instant = now
+        ): Comment {
+            val comment = commentRepository.save(Comment(
+                problem = problem,
+                user = user,
+                text = text,
+                parent = parent,
+                createdAt = createdAt
+            ))
+            if (parent != null) {
+                parent.replies.add(comment)
+                commentRepository.save(parent)
+            }
+            return comment
+        }
+
+        // 10. Seed Comments on Problems
+        // On Simple A+B (p1)
+        val p1_c1 = saveComment(p1, u1, "Is Python's `input().split()` slow for large inputs?", createdAt = now.minus(40L, ChronoUnit.MINUTES))
+        saveComment(p1, u2, "For simple A+B it doesn't matter, but for larger problems use `sys.stdin.readline().split()`.", parent = p1_c1, createdAt = now.minus(35L, ChronoUnit.MINUTES))
+        saveComment(p1, admin, "This is a basic practice task. Keep it up!", createdAt = now.minus(30L, ChronoUnit.MINUTES))
+
+        // On Watermelon (p4)
+        val p4_c1 = saveComment(p4, u3, "Be careful with W = 2. It cannot be divided into two even positive parts since the only option is 1 and 1, which are odd!", createdAt = now.minus(25L, ChronoUnit.MINUTES))
+        saveComment(p4, u4, "Ah! I forgot about the positive constraint and spent 10 minutes debugging why 2 failed. Thanks!", parent = p4_c1, createdAt = now.minus(22L, ChronoUnit.MINUTES))
+
+        // On Find Divisor (p2)
+        val p2_c1 = saveComment(p2, u1, "I'm struggling with performance for N = 10^9. Any tips?", createdAt = now.minus(18L, ChronoUnit.MINUTES))
+        saveComment(p2, u5, "Try searching only up to sqrt(N)!", parent = p2_c1, createdAt = now.minus(15L, ChronoUnit.MINUTES))
+        println("Seeded public problem comments and replies.")
 
         println("Contests and members seeded. 10 non-public duplicate problems added to each contest (first is Simple A+B).")
         println("=== Demo Data Initialization Completed Successfully ===")

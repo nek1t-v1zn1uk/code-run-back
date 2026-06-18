@@ -17,9 +17,16 @@ class RedisConfig {
 
     @Bean
     fun cacheManager(connectionFactory: RedisConnectionFactory): RedisCacheManager {
-        // Use default constructor — it includes @class type metadata in JSON,
-        // which avoids Spring DevTools RestartClassLoader conflicts.
-        val jsonSerializer = GenericJackson2JsonRedisSerializer()
+        val mapper = com.fasterxml.jackson.databind.ObjectMapper().apply {
+            registerModule(com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
+            registerModule(com.fasterxml.jackson.module.kotlin.KotlinModule.Builder().build())
+            activateDefaultTyping(
+                com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator.instance,
+                com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping.NON_FINAL,
+                com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
+            )
+        }
+        val jsonSerializer = GenericJackson2JsonRedisSerializer(mapper)
 
         val defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
             .serializeKeysWith(
