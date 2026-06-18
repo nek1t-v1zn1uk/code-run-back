@@ -1111,16 +1111,15 @@ class DemoDataInitializer(
             ))
         }
 
-        // 8. Seed Solutions for Trending and In Progress imitation
-        // Trending: Simple A+B (Problem 1), Watermelon (Problem 4), Way Too Long Words (Problem 5)
-        val p1 = publicProblems[0] // Simple A+B
-        val p2 = publicProblems[1] // Find Divisor
-        val p3 = publicProblems[2] // Find Any Index
-        val p4 = publicProblems[3] // Watermelon
-        val p5 = publicProblems[4] // Way Too Long Words
-        val p6 = publicProblems[5] // Theatre Square
+        // Seed Solutions
+        val p1 = publicProblems[0]
+        val p2 = publicProblems[1]
+        val p3 = publicProblems[2]
+        val p4 = publicProblems[3]
+        val p5 = publicProblems[4]
+        val p6 = publicProblems[5]
 
-        // Solutions for Problem 1 (Simple A+B): 5 solutions -> SUCCESS
+        // Simple A+B
         listOf(u1, u2, u3, u4, u5).forEachIndexed { index, user ->
             solutionRepository.save(Solution(
                 problem = p1,
@@ -1132,7 +1131,7 @@ class DemoDataInitializer(
             ))
         }
 
-        // Solutions for Problem 4 (Watermelon): 4 solutions -> SUCCESS
+        // Watermelon
         listOf(u1, u2, u3, u4).forEachIndexed { index, user ->
             solutionRepository.save(Solution(
                 problem = p4,
@@ -1144,7 +1143,7 @@ class DemoDataInitializer(
             ))
         }
 
-        // Solutions for Problem 5 (Way Too Long Words): 3 solutions -> SUCCESS
+        // Way Too Long Words
         listOf(u1, u2, u3).forEachIndexed { index, user ->
             solutionRepository.save(Solution(
                 problem = p5,
@@ -1156,7 +1155,7 @@ class DemoDataInitializer(
             ))
         }
 
-        // Solutions for Problem 6 (Theatre Square): 2 solutions -> SUCCESS
+        // Theatre Square
         listOf(u1, u2).forEachIndexed { index, user ->
             solutionRepository.save(Solution(
                 problem = p6,
@@ -1168,12 +1167,11 @@ class DemoDataInitializer(
             ))
         }
 
-        // In Progress solutions for u1 (Dmitry Petrenko):
-        // Fails on Problem 2 (Find Divisor) and Problem 3 (Find Any Index)
+        // In Progress solutions for u1
         solutionRepository.save(Solution(
             problem = p2,
             user = u1,
-            code = "print(2) # Dumb guess",
+            code = "print(2)",
             language = pythonLang,
             status = SolutionStatus.TEST_FAILED,
             sentAt = now.minus(5L, ChronoUnit.MINUTES)
@@ -1182,19 +1180,17 @@ class DemoDataInitializer(
         solutionRepository.save(Solution(
             problem = p3,
             user = u1,
-            code = "print(-1) # Dumb guess",
+            code = "print(-1)",
             language = pythonLang,
             status = SolutionStatus.COMPILATION_ERROR,
             sentAt = now.minus(8L, ChronoUnit.MINUTES)
         ))
-        println("Solutions seeded to simulate trending (Simple A+B, Watermelon, Way Too Long Words) and in-progress problems for Dmitry Petrenko (Find Divisor, Find Any Index).")
 
-        // 9. Seed some contest submissions for Contest 1 to make the scoreboard look alive
+        // Contest submissions
         val cp1_1 = contest1Problems[0]
         val cp1_2 = contest1Problems[1]
 
-        // u3 (Kateryna Kovalenko)
-        // Problem 1: SUCCESS at +1 min (4 mins ago)
+        // u3
         solutionRepository.save(Solution(
             problem = cp1_1.problem,
             user = u3,
@@ -1207,7 +1203,6 @@ class DemoDataInitializer(
             executedAt = now.minus(4L, ChronoUnit.MINUTES)
         ))
 
-        // Problem 2: WRONG_ANSWER (TEST_FAILED) at +2 min (3 mins ago)
         solutionRepository.save(Solution(
             problem = cp1_2.problem,
             user = u3,
@@ -1220,7 +1215,6 @@ class DemoDataInitializer(
             executedAt = now.minus(3L, ChronoUnit.MINUTES)
         ))
 
-        // Problem 2: SUCCESS at +3 min (2 mins ago)
         solutionRepository.save(Solution(
             problem = cp1_2.problem,
             user = u3,
@@ -1233,8 +1227,7 @@ class DemoDataInitializer(
             executedAt = now.minus(2L, ChronoUnit.MINUTES)
         ))
 
-        // u4 (Oleksandr Moroz)
-        // Problem 1: SUCCESS at +2 min (3 mins ago)
+        // u4
         solutionRepository.save(Solution(
             problem = cp1_1.problem,
             user = u4,
@@ -1247,7 +1240,6 @@ class DemoDataInitializer(
             executedAt = now.minus(3L, ChronoUnit.MINUTES)
         ))
 
-        // Problem 2: TEST_FAILED at +4 min (1 min ago)
         solutionRepository.save(Solution(
             problem = cp1_2.problem,
             user = u4,
@@ -1260,8 +1252,7 @@ class DemoDataInitializer(
             executedAt = now.minus(1L, ChronoUnit.MINUTES)
         ))
 
-        // u5 (Anastasia Ivanova)
-        // Problem 1: COMPILATION_ERROR at +3 min (2 mins ago)
+        // u5
         solutionRepository.save(Solution(
             problem = cp1_1.problem,
             user = u5,
@@ -1273,7 +1264,6 @@ class DemoDataInitializer(
             sentAt = now.minus(2L, ChronoUnit.MINUTES),
             executedAt = now.minus(2L, ChronoUnit.MINUTES)
         ))
-        println("Seeded Contest 1 submissions for Kateryna Kovalenko, Oleksandr Moroz, Anastasia Ivanova.")
 
         // Helper to save comments
         fun saveComment(
@@ -1297,20 +1287,16 @@ class DemoDataInitializer(
             return comment
         }
 
-        // 10. Seed Comments on Problems
-        // On Simple A+B (p1)
+        // Seed Comments
         val p1_c1 = saveComment(p1, u1, "Is Python's `input().split()` slow for large inputs?", createdAt = now.minus(40L, ChronoUnit.MINUTES))
         saveComment(p1, u2, "For simple A+B it doesn't matter, but for larger problems use `sys.stdin.readline().split()`.", parent = p1_c1, createdAt = now.minus(35L, ChronoUnit.MINUTES))
         saveComment(p1, admin, "This is a basic practice task. Keep it up!", createdAt = now.minus(30L, ChronoUnit.MINUTES))
 
-        // On Watermelon (p4)
         val p4_c1 = saveComment(p4, u3, "Be careful with W = 2. It cannot be divided into two even positive parts since the only option is 1 and 1, which are odd!", createdAt = now.minus(25L, ChronoUnit.MINUTES))
         saveComment(p4, u4, "Ah! I forgot about the positive constraint and spent 10 minutes debugging why 2 failed. Thanks!", parent = p4_c1, createdAt = now.minus(22L, ChronoUnit.MINUTES))
 
-        // On Find Divisor (p2)
         val p2_c1 = saveComment(p2, u1, "I'm struggling with performance for N = 10^9. Any tips?", createdAt = now.minus(18L, ChronoUnit.MINUTES))
         saveComment(p2, u5, "Try searching only up to sqrt(N)!", parent = p2_c1, createdAt = now.minus(15L, ChronoUnit.MINUTES))
-        println("Seeded public problem comments and replies.")
 
         println("Contests and members seeded. 10 non-public duplicate problems added to each contest (first is Simple A+B).")
         println("=== Demo Data Initialization Completed Successfully ===")
