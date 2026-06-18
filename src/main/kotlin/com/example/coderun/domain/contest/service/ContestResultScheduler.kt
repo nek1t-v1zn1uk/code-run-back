@@ -4,12 +4,14 @@ import com.example.coderun.domain.contest.repository.ContestMemberRepository
 import com.example.coderun.domain.contest.repository.ContestRepository
 import org.slf4j.LoggerFactory
 import org.springframework.cache.CacheManager
+import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
 @Service
+@EnableScheduling
 class ContestResultScheduler(
     private val contestRepository: ContestRepository,
     private val contestMemberRepository: ContestMemberRepository,
