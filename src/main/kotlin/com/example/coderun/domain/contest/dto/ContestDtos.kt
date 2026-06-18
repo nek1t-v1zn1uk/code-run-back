@@ -16,54 +16,58 @@ data class ContestDto(
     val endTime: Instant
 )
 data class ContestProblemDto(
-    val id: Int,
-    val contestId: Int,
-    val problemId: Int,
-    val ordinal: Int
-)
+    val id: Int = 0,
+    val contestId: Int = 0,
+    val problemId: Int = 0,
+    val ordinal: Int = 0
+) : java.io.Serializable
+
+data class ContestProblemsCacheWrapper(
+    val problems: List<ContestProblemDto>
+) : java.io.Serializable
 data class ContestMemberDto(
-    val id: Int,
-    val userId: Int,
-    val contestId: Int,
-    val resultPoints: Int?,
-    val resultPlace: Int?
+    val id: Int = 0,
+    val userId: Int = 0,
+    val contestId: Int = 0,
+    val resultPoints: Int? = null,
+    val resultPlace: Int? = null
 )
 
 data class ContestProgressDto(
-    val solvedCount: Int,
-    val totalUnsuccessful: Int,
-    val totalScore: Int,
-    val problemStats: Map<Int, ProblemStatDto>
+    val solvedCount: Int = 0,
+    val totalUnsuccessful: Int = 0,
+    val totalScore: Int = 0,
+    val problemStats: Map<Int, ProblemStatDto> = emptyMap()
 )
 
 data class ProblemStatDto(
-    val problemId: Int,
-    val isSolved: Boolean,
-    val unsuccessfulCount: Int,
-    val score: Int
+    val problemId: Int = 0,
+    val isSolved: Boolean = false,
+    val unsuccessfulCount: Int = 0,
+    val score: Int = 0
 )
 
 data class ScoreboardDto(
-    val contestId: Int,
-    val rows: List<ScoreboardRowDto>
-)
+    val contestId: Int = 0,
+    val rows: List<ScoreboardRowDto> = emptyList()
+) : java.io.Serializable
 
 data class ScoreboardRowDto(
-    val userId: Int,
-    val username: String, // Actually firstName + lastName
-    val solvedCount: Int,
-    val totalScore: Int,
-    val problemStats: Map<Int, ScoreboardProblemStatDto>,
+    val userId: Int = 0,
+    val username: String = "",
+    val solvedCount: Int = 0,
+    val totalScore: Int = 0,
+    val problemStats: Map<Int, ScoreboardProblemStatDto> = emptyMap(),
     val place: Int = 0
-)
+) : java.io.Serializable
 
 data class ScoreboardProblemStatDto(
-    val problemId: Int,
-    val isSolved: Boolean,
-    val unsuccessfulCount: Int,
-    val frozenAttempts: Int,
-    val score: Int
-)
+    val problemId: Int = 0,
+    val isSolved: Boolean = false,
+    val unsuccessfulCount: Int = 0,
+    val frozenAttempts: Int = 0,
+    val score: Int = 0
+) : java.io.Serializable
 
 
 data class CreateContestRequest(

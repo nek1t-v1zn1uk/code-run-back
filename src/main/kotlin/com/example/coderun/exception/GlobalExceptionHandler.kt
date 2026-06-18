@@ -72,9 +72,9 @@ class GlobalExceptionHandler {
         return ResponseEntity(error, HttpStatus.BAD_REQUEST)
     }
 
-    // Handle General Exceptions (The "Everything Else" catch)
     @ExceptionHandler(Exception::class)
     fun handleGeneral(ex: Exception): ResponseEntity<ApiErrorResponse> {
+        ex.printStackTrace() // Added for debugging
         val error = ApiErrorResponse(
             status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
             message = "An unexpected error occurred"
